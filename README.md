@@ -37,12 +37,16 @@ Written by clorf/蒋松霖
 账户系统类：
 
 ```cpp
+struct Account {
+    std::string user_ID;
+    std::string password;
+    std::string user_name;
+    int privilege;
+}
+
 class AccountSystem {
     private:
-    	std::string user_ID;
-        std::string password;
-        std::string user_name;
-        int privilege;
+    	BlockLinkedList<Account, int> account_data;
     public:
     	AccountSystem();
         void RegisterAccount(std::string &, std::string &, std::string &);
@@ -56,15 +60,19 @@ class AccountSystem {
 图书系统类：
 
 ```cpp
+struct Book {
+    std::string ISBN;
+    std::string book_name;
+    std::string author;
+    std::vector<std::string> keyword;
+    int quantity;
+    double price;
+    double total_cost;
+}
+
 class BookSystem {
     private:
-        std::string ISBN;
-        std::string book_name;
-        std::string author;
-        std::vector<std::string> keyword;
-        int quantity;
-        double price;
-        double total_cost;
+        BlockLinkedList<Book, int> book_data;
     public:
         BookSystem();
         void SearchBook(std::string &, int &);
@@ -113,12 +121,8 @@ class BookStore {
 
 ##### 文件存储说明
 
-暂无
+通过块状链表实现数据库，同时通过文件读写将数据库存于外存中，对于账户与图书以及日志均有一个数据库来维护。
 
 ##### 其他补充说明
-
-暂无
-
-##### 修订日志
 
 暂无
