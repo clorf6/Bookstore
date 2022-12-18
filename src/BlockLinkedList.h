@@ -2,8 +2,8 @@
 // Created by 屋顶上的小丑 on 2022/12/11.
 //
 
-#ifndef BOOKSTORE_BLOCKLINKEDLIST
-#define BOOKSTORE_BLOCKLINKEDLIST
+#ifndef BOOKSTORE_BLOCKLINKEDLIST_H
+#define BOOKSTORE_BLOCKLINKEDLIST_H
 
 #include<fstream>
 #include<string>
@@ -13,19 +13,18 @@
 #include<algorithm>
 #include<utility>
 
-const int kNodeSize = 350;
+const int kNodeSize = 316;
 const int kMaxIndexLength = 64;
 const size_t kSizeofIndex = 64;
-const size_t kSizeofElement = 68;
-const size_t kSizeofNode = 16 + (kNodeSize << 1) * kSizeofElement;
 static char *buffer;
-static std::vector<int> x;
 
-struct Element {
+template<class T>
+class Element {
+public:
     char index[kMaxIndexLength];
-    int value;
+    T value;
 
-    Element(std::string Index = "",int Value = 0) : value(Value) {
+    Element(std::string Index = "",T Value = 0) : value(Value) {
         memset(index, 0, kSizeofIndex);
         strcpy(index, Index.c_str());
     };
@@ -57,28 +56,52 @@ struct Element {
     bool operator!=(const Element &x) const {
         return strcmp(index, x.index) || value != x.value;
     }
+
+    ~Element() = default;
 };
 
-struct Node {
+template<class T>
+class NodeInfo {
+public:
     int size, pos, nex, pre;
-    Element data[kNodeSize << 1];
+    Element<T> min_element;
+
+    NodeInfo() : size(0), pos(0), nex(0), pre(0) {};
+    ~NodeInfo() = default;
+};
+
+template<class T>
+class Node {
+public:
+    int size, pos, nex, pre;
+    Element<T> min_element;
+    Element<T> data[kNodeSize << 1];
 
     Node() : size(0), pos(0), nex(0), pre(0) {};
+    ~Node() = default;
 };
 
-static Node now, nex, nex_nex, las;
-
+template<class T>
 class BlockLinkedList {
-public:
+private:
     std::fstream file;
+public:
+    const size_t kSizeofElement = 64 + sizeof(T);
+    const size_t kSizeofNodeInfo = 16 + kSizeofElement;
+    const size_t kSizeofNode = kSizeofNodeInfo + (kNodeSize << 1) * kSizeofElement;
+    Node<T> now, nex, las;
+    NodeInfo<T> now_info, nex_info, nex_nex_info;
+    std::vector<T> x;
     BlockLinkedList(const std::string &);
-    void ReadNode(int, Node &);
-    void WriteNode(int, Node &);
-    void Split(int);
-    void Merge(int);
-    void insert(const Element &);
-    void erase(const Element &);
-    void find(const std::string &, std::vector<int> &);
+    void ReadNode(int, Node<T> &);
+    void ReadNodeInfo(int, NodeInfo<T> &);
+    void WriteNode(int, Node<T> &);
+    void WriteNodeInfo(int, NodeInfo<T> &);
+    void Split(Node<T> &);
+    void Merge(Node<T> &, Node<T> &);
+    void insert(const Element<T> &);
+    void erase(const Element<T> &);
+    void find(const std::string &);
     ~BlockLinkedList();
 };
 
