@@ -9,7 +9,6 @@
 BookSystem::BookSystem() {
     book_data.open("book_data", std::ios::in | std::ios::out | std::ios::binary);
     if (!book_data.is_open()) {
-        std::ofstream create;
         create.open("book_data");
         book_data.open("book_data", std::ios::in | std::ios::out | std::ios::binary);
     }
@@ -162,12 +161,8 @@ void BookSystem::SearchBookByKeyword(const std::string &_keyword) {
     }
 }
 
-void BookSystem::BuyBook(const std::string &isbn, const double &_quantity) {
+void BookSystem::BuyBook(const std::string &isbn, const int &_quantity) {
     if (online.empty()) {
-        std::cout << "Invalid\n";
-        return ;
-    }
-    if (_quantity <= eps || _quantity - std::floor(_quantity) > eps) {
         std::cout << "Invalid\n";
         return ;
     }
@@ -176,14 +171,18 @@ void BookSystem::BuyBook(const std::string &isbn, const double &_quantity) {
         std::cout << "Invalid\n";
         return ;
     }
-    int Quantity = (int)std::floor(_quantity);
     int pos = isbn_pos.ans[0];
     ReadBook(pos, now_book);
-    now_book.quantity -= Quantity;
-    double income = now_book.price * Quantity;
-//    auto now_finance = finance.back();
-//    finance.emplace_back(now_finance.first + income, now_finance.second);
-    std::cout << income << '\n';
+    if (_quantity > now_book.quantity) {
+        std::cout << "Invalid\n";
+        return ;
+    }
+    now_book.quantity -= _quantity;
+    double income = now_book.price * _quantity;
+    ReadDeal(count, now_deal);
+    now_deal.income += income;
+    WriteDeal(++count, now_deal);
+    std::cout << std::fixed << std::setprecision(2) << income << '\n';
     WriteBook(pos, now_book);
 }
 
@@ -223,10 +222,6 @@ void BookSystem::ModifyBookISBN(const std::string &isbn) {
         return ;
     }
     ReadBook(pos, now_book);
-    if (now_book.ISBN == isbn) {
-        std::cout << "Invalid\n";
-        return ;
-    }
     isbn_pos.erase(Element<int>{now_book.ISBN, pos});
     memset(now_book.ISBN, 0, 20);
     strcpy(now_book.ISBN, isbn.c_str());
@@ -330,16 +325,8 @@ void BookSystem::ModifyBookPrice(const double &_price) {
     WriteBook(pos, now_book);
 }
 
-void BookSystem::ImportBook(const double &_quantity, const double &_totalcost) {
+void BookSystem::ImportBook(const int &_quantity, const double &_totalcost) {
     if (GetPrivilege() < 3) {
-        std::cout << "Invalid\n";
-        return ;
-    }
-    if (_quantity <= eps || _quantity - std::floor(_quantity) > eps) {
-        std::cout << "Invalid\n";
-        return ;
-    }
-    if (_totalcost <= eps) {
         std::cout << "Invalid\n";
         return ;
     }
@@ -349,10 +336,10 @@ void BookSystem::ImportBook(const double &_quantity, const double &_totalcost) {
         return ;
     }
     ReadBook(pos, now_book);
-    int Quantity = (int)std::floor(_quantity);
-    now_book.quantity += Quantity;
-//    auto now_finance = finance.back();
-//    finance.emplace_back(now_finance.first, now_finance.second + _totalcost);
+    now_book.quantity += _quantity;
+    ReadDeal(count, now_deal);
+    now_deal.outcome += _totalcost;
+    WriteDeal(++count, now_deal);
     WriteBook(pos, now_book);
 }
 

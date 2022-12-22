@@ -17,8 +17,7 @@
 #include "AccountSystem.h"
 #include "LogSystem.h"
 #include "BlockLinkedList.h"
-
-const double eps = 1e-7;
+#include "Bookstore.h"
 
 struct Book {
     char ISBN[20]{};
@@ -74,7 +73,7 @@ public:
     void SearchBookByBookName(const std::string &);
     void SearchBookByAuthor(const std::string &);
     void SearchBookByKeyword(const std::string &);
-    void BuyBook(const std::string &, const double &);
+    void BuyBook(const std::string &, const int &);
     int AddBook(const std::string &);
     void SelectBook(const std::string &);
     void ModifyBookISBN(const std::string &);
@@ -82,7 +81,7 @@ public:
     void ModifyBookAuthor(const std::string &);
     void ModifyBookKeyword(const std::string &);
     void ModifyBookPrice(const double &);
-    void ImportBook(const double &, const double &);
+    void ImportBook(const int &, const double &);
     ~BookSystem();
 };
 

@@ -9,7 +9,6 @@
 AccountSystem::AccountSystem() {
     account_data.open("account_data", std::ios::in | std::ios::out | std::ios::binary);
     if (!account_data.is_open()) {
-        std::ofstream create;
         create.open("account_data");
         account_data.open("account_data", std::ios::in | std::ios::out | std::ios::binary);
     }
@@ -33,7 +32,7 @@ void AccountSystem::WriteAccount(int pos,
 }
 
 void AccountSystem::LoginAccount(const std::string &User_ID,
-                                 const std::string &Password) {
+                                 const std::string &Password = "") {
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
         std::cout << "Invalid\n";

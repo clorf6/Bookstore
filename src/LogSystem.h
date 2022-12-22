@@ -12,7 +12,7 @@
 #include <iomanip>
 
 std::fstream finance;
-std::fstream log;
+std::fstream log_file;
 int count;
 
 struct Deal {
