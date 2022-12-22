@@ -34,30 +34,40 @@ struct Account {
 };
 
 const size_t kSizeofAccount = sizeof(Account);
-static Account now, top;
+static Account now_account;
 
 struct OnlineUser {
     int user_pos;
     int book_pos;
+    int user_privilege;
 
-    explicit OnlineUser(const int& User_pos = 0, const int& Book_pos = 0) : user_pos(User_pos), book_pos(Book_pos) {};
+    explicit OnlineUser(const int& User_pos = 0,
+                        const int& Book_pos = 0,
+                        const int& User_privilege = 0) :
+                        user_pos(User_pos),
+                        book_pos(Book_pos),
+                        user_privilege(User_privilege) {};
 };
 
 std::vector<OnlineUser> online;
-std::unordered_map<int, int> is_login;
+static std::unordered_map<int, int> is_login;
+static int GetPrivilege() {
+    if (online.empty()) {
+        return 0;
+    }
+    return online.back().user_privilege;
+}
 
 class AccountSystem {
 private:
     BlockLinkedList<int> account_pos = BlockLinkedList<int>("account_pos");
     std::fstream account_data;
 public:
-    int top_privilege;
     AccountSystem();
     void ReadAccount(int, Account &);
     void WriteAccount(int, Account &);
-    void GetPrivilege();
     void LoginAccount(const std::string &, const std::string &);
-    void LogoutAccount();
+    static void LogoutAccount();
     void RegisterAccount(const std::string &, const std::string &, const std::string &);
     void ChangePassword(const std::string &, const std::string &, const std::string &);
     void AddAccount(const std::string &, const std::string &, const int &, const std::string &);

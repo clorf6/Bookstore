@@ -17,7 +17,7 @@ AccountSystem::AccountSystem() {
     WriteAccount(1, root);
     account_pos.insert(Element<int>{"root", 1});
     online.clear();
-    online.emplace_back(1);
+    online.emplace_back(1, 0, 7);
 }
 
 void AccountSystem::ReadAccount(int pos,
@@ -32,14 +32,6 @@ void AccountSystem::WriteAccount(int pos,
     account_data.write(reinterpret_cast<char *>(&ret), kSizeofAccount);
 }
 
-void AccountSystem::GetPrivilege() {
-    if (online.empty()) {
-        top_privilege = 0;
-    }
-    ReadAccount(online.back().user_pos, top);
-    top_privilege = top.privilege;
-}
-
 void AccountSystem::LoginAccount(const std::string &User_ID,
                                  const std::string &Password) {
     account_pos.find(User_ID);
@@ -48,13 +40,12 @@ void AccountSystem::LoginAccount(const std::string &User_ID,
         return ;
     }
     int pos = account_pos.ans[0];
-    GetPrivilege();
-    ReadAccount(pos, now);
-    if (now.password != Password && top_privilege <= now.privilege) {
+    ReadAccount(pos, now_account);
+    if (now_account.password != Password && GetPrivilege() <= now_account.privilege) {
         std::cout << "Invalid\n";
         return ;
     }
-    online.emplace_back(pos, 0);
+    online.emplace_back(pos, 0, now_account.privilege);
     is_login[pos]++;
 }
 
@@ -85,29 +76,35 @@ void AccountSystem::RegisterAccount(const std::string &User_ID,
 void AccountSystem::ChangePassword(const std::string &User_ID,
                                    const std::string &CurPasswd,
                                    const std::string &NewPasswd) {
+    if (online.empty()) {
+        std::cout << "Invalid\n";
+        return ;
+    }
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
         std::cout << "Invalid\n";
         return ;
     }
     int pos = account_pos.ans[0];
-    GetPrivilege();
-    ReadAccount(pos, now);
-    if (now.password != CurPasswd && top_privilege != 7) {
+    ReadAccount(pos, now_account);
+    if (now_account.password != CurPasswd && GetPrivilege() != 7) {
         std::cout << "Invalid\n";
         return ;
     }
-    memset(now.password, 0, 30);
-    strcpy(now.password, NewPasswd.c_str());
-    WriteAccount(pos, now);
+    memset(now_account.password, 0, 30);
+    strcpy(now_account.password, NewPasswd.c_str());
+    WriteAccount(pos, now_account);
 }
 
 void AccountSystem::AddAccount(const std::string &User_ID,
                                const std::string &Password,
                                const int &Privilege,
                                const std::string &User_name) {
-    GetPrivilege();
-    if (top_privilege <= Privilege) {
+    if (GetPrivilege() < 3) {
+        std::cout << "Invalid\n";
+        return ;
+    }
+    if (GetPrivilege() <= Privilege) {
         std::cout << "Invalid\n";
         return ;
     }
@@ -124,6 +121,10 @@ void AccountSystem::AddAccount(const std::string &User_ID,
 }
 
 void AccountSystem::DelAccount(const std::string &User_ID) {
+    if (GetPrivilege() < 7) {
+        std::cout << "Invalid\n";
+        return ;
+    }
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
         std::cout << "Invalid\n";
@@ -144,6 +145,8 @@ void AccountSystem::DelAccount(const std::string &User_ID) {
 
 AccountSystem::~AccountSystem() {
     account_data.close();
+    online.clear();
+    is_login.clear();
 }
 
 #endif //BOOKSTORE_ACCOUNTSYSTEM_CPP
