@@ -16,12 +16,13 @@ int GetPrivilege() {
     return online.back().user_privilege;
 }
 
-AccountSystem::AccountSystem() {
-    account_data.open("account_data", std::ios::in | std::ios::out | std::ios::binary);
+AccountSystem::AccountSystem(): account_pos("accountpos") {
+    account_data.open("accountdata", std::ios::in | std::ios::out | std::ios::binary);
     if (!account_data.is_open()) {
         std::ofstream create;
-        create.open("account_data");
-        account_data.open("account_data", std::ios::in | std::ios::out | std::ios::binary);
+        create.open("accountdata");
+        create.close();
+        account_data.open("accountdata", std::ios::in | std::ios::out | std::ios::binary);
     }
     Account root("root", "sjtu", "root", 7);
     WriteAccount(1, root);

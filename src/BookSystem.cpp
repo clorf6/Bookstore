@@ -6,25 +6,33 @@
 
 #include "BookSystem.h"
 
-BookSystem::BookSystem() {
-    book_data.open("book_data", std::ios::in | std::ios::out | std::ios::binary);
+BookSystem::BookSystem(): isbn_pos("isbnpos"), book_name_pos("booknamepos"),
+                          author_pos("authorpos"), keyword_pos("keywordpos") {
+    book_data.open("bookdata", std::ios::in | std::ios::out | std::ios::binary);
     if (!book_data.is_open()) {
         std::ofstream create;
-        create.open("book_data");
-        book_data.open("book_data", std::ios::in | std::ios::out | std::ios::binary);
+        create.open("bookdata");
+        create.close();
+        book_data.open("bookdata", std::ios::in | std::ios::out | std::ios::binary);
     }
     finance.open("finance", std::ios::in | std::ios::out | std::ios::binary);
     if (!finance.is_open()) {
         std::ofstream create;
         create.open("finance");
+        create.close();
         finance.open("finance", std::ios::in | std::ios::out | std::ios::binary);
     }
     finance.seekp(0, std::ios::end);
     count = finance.tellp() / kSizeofDeal;
+    if (!count) {
+        now_deal = Deal{0.0, 0.0};
+        WriteDeal(1, now_deal);
+    }
     log_file.open("log", std::ios::in | std::ios::out | std::ios::binary);
     if (!log_file.is_open()) {
         std::ofstream create;
         create.open("log");
+        create.close();
         finance.open("log", std::ios::in | std::ios::out | std::ios::binary);
     }
 }
@@ -50,18 +58,15 @@ void BookSystem::PrintAllBook() {
         std::cout << '\n';
         return;
     }
-    ans_book.clear();
     for (int &pos: isbn_pos.ans) {
         ReadBook(pos, now_book);
-        ans_book.push_back(now_book);
-    }
-    for (auto &now: ans_book) {
-        std::cout << now.ISBN << '\t'
-                  << now.book_name << '\t'
-                  << now.author << '\t'
-                  << now.keyword << '\t'
-                  << now.price << '\t'
-                  << now.quantity << '\n';
+        std::cout << std::fixed << std::setprecision(2)
+                  << now_book.ISBN << '\t'
+                  << now_book.book_name << '\t'
+                  << now_book.author << '\t'
+                  << now_book.keyword << '\t'
+                  << now_book.price << '\t'
+                  << now_book.quantity << '\n';
     }
 }
 
@@ -81,7 +86,8 @@ void BookSystem::SearchBookByISBN(const std::string &isbn) {
     }
     std::sort(ans_book.begin(), ans_book.end());
     for (auto &now: ans_book) {
-        std::cout << now.ISBN << '\t'
+        std::cout << std::fixed << std::setprecision(2)
+                  << now.ISBN << '\t'
                   << now.book_name << '\t'
                   << now.author << '\t'
                   << now.keyword << '\t'
@@ -106,7 +112,8 @@ void BookSystem::SearchBookByBookName(const std::string &_book_name) {
     }
     std::sort(ans_book.begin(), ans_book.end());
     for (auto &now: ans_book) {
-        std::cout << now.ISBN << '\t'
+        std::cout << std::fixed << std::setprecision(2)
+                  << now.ISBN << '\t'
                   << now.book_name << '\t'
                   << now.author << '\t'
                   << now.keyword << '\t'
@@ -131,7 +138,8 @@ void BookSystem::SearchBookByAuthor(const std::string &_author) {
     }
     std::sort(ans_book.begin(), ans_book.end());
     for (auto &now: ans_book) {
-        std::cout << now.ISBN << '\t'
+        std::cout << std::fixed << std::setprecision(2)
+                  << now.ISBN << '\t'
                   << now.book_name << '\t'
                   << now.author << '\t'
                   << now.keyword << '\t'
@@ -161,7 +169,8 @@ void BookSystem::SearchBookByKeyword(const std::string &_keyword) {
     }
     std::sort(ans_book.begin(), ans_book.end());
     for (auto &now: ans_book) {
-        std::cout << now.ISBN << '\t'
+        std::cout << std::fixed << std::setprecision(2)
+                  << now.ISBN << '\t'
                   << now.book_name << '\t'
                   << now.author << '\t'
                   << now.keyword << '\t'
@@ -229,6 +238,7 @@ bool BookSystem::JudgeModify() {
 void BookSystem::ModifyBookISBN(const std::string &isbn) {
     int pos = online.back().book_pos;
     ReadBook(pos, now_book);
+    if (now_book.ISBN == isbn) throw Exception("Invalid");
     isbn_pos.erase(Element<int>{now_book.ISBN, pos});
     memset(now_book.ISBN, 0, 20);
     strcpy(now_book.ISBN, isbn.c_str());
@@ -318,6 +328,9 @@ void BookSystem::QueryFinance(const int &number) {
     }
     if (number > count) {
         throw Exception("Invalid");
+    } else if (number == count) {
+        NowFinance();
+        return ;
     }
     ReadDeal(count, now_deal);
     ReadDeal(count - number, pre_deal);

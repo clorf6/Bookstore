@@ -14,8 +14,8 @@
 #include <utility>
 
 const int kNodeSize = 316;
-const int kMaxIndexLength = 60;
-const size_t kSizeofIndex = 60;
+const int kMaxIndexLength = 64;
+const size_t kSizeofIndex = 64;
 static char *buffer;
 
 template<class T>
@@ -24,7 +24,7 @@ public:
     char index[kMaxIndexLength]{};
     T value;
 
-    explicit Element(const std::string &Index = "", const T &Value = 0) : value(Value) {
+    Element(const std::string &Index = "", const T &Value = 0) : value(Value) {
         memset(index, 0, kSizeofIndex);
         strcpy(index, Index.c_str());
     };
@@ -95,9 +95,7 @@ private:
 public:
     std::vector<T> ans;
 
-    explicit BlockLinkedList(const std::string &);
-
-    BlockLinkedList(const BlockLinkedList<T> &);
+    BlockLinkedList(const std::string &);
 
     void ReadNode(int, Node<T> &);
 
@@ -128,13 +126,9 @@ BlockLinkedList<T>::BlockLinkedList(const std::string &file_name) {
     if (!file.is_open()) {
         std::ofstream create;
         create.open(file_name);
+        create.close();
         file.open(file_name, std::ios::in | std::ios::out | std::ios::binary);
     }
-}
-
-template<class T>
-BlockLinkedList<T>::BlockLinkedList(const BlockLinkedList<T> &x) {
-    file = x.file;
 }
 
 template<class T>
@@ -215,9 +209,16 @@ void BlockLinkedList<T>::insert(const Element<T> &x) {
         now.size = 1;
         now.data[0] = now.min_element = x;
         WriteNode(1, now);
-        return;
+        return ;
     }
     ReadNodeInfo(1, now_info);
+    if (!now_info.size) {
+        ReadNode(1, now);
+        now.size = 1;
+        now.data[0] = now.min_element = x;
+        WriteNode(1, now);
+        return ;
+    }
     if (x < now_info.min_element) {
         ReadNode(1, now);
         for (int i = now.size - 1; i >= 0; i--) {
@@ -265,10 +266,12 @@ void BlockLinkedList<T>::insert(const Element<T> &x) {
 
 template<class T>
 void BlockLinkedList<T>::erase(const Element<T> &x) {
+    file.seekg(0, std::ios::end);
+    int delta = file.tellg();
+    if (!delta) return ;
     ReadNodeInfo(1, now_info);
-    if (x < now_info.min_element) {
-        return;
-    }
+    if (!now_info.size) return ;
+    if (x < now_info.min_element) return;
     bool flag = false;
     while (x >= now_info.min_element) {
         if (now_info.nex) {
@@ -308,7 +311,11 @@ template<class T>
 void BlockLinkedList<T>::find(const std::string &index) {
     buffer = (char *) index.data();
     ans.clear();
+    file.seekg(0, std::ios::end);
+    int delta = file.tellg();
+    if (!delta) return ;
     ReadNodeInfo(1, now_info);
+    if (!now_info.size) return ;
     if (strcmp(buffer, now_info.min_element.index) < 0) {
         return;
     }
@@ -364,7 +371,11 @@ void BlockLinkedList<T>::find(const std::string &index) {
 template<class T>
 void BlockLinkedList<T>::getall() {
     ans.clear();
+    file.seekg(0, std::ios::end);
+    int delta = file.tellg();
+    if (!delta) return ;
     ReadNode(1, now);
+    if (!now.size) return;
     while (now.nex) {
         for (int i = 0; i < now.size; i++) {
             ans.push_back(now.data[i].value);

@@ -10,9 +10,11 @@
 void Bookstore::Run() {
     while (getline(std::cin, op)) {
         try {
-            if (op == "quit" || op == "exit") break;
             DivideOperation(op);
-            if (ops[0] == "su") {
+            if (ops[0] == "exit" || ops[0] == "quit") {
+                if (ops.size() != 1) throw Exception("Invalid");
+                break;
+            } else if (ops[0] == "su") {
                 if (ops.size() != 2 && ops.size() != 3) throw Exception("Invalid");
                 if (!JudgeUserIDAndPasswd(ops[1])) throw Exception("Invalid");
                 if (ops.size() == 2) {
@@ -61,7 +63,10 @@ void Bookstore::Run() {
                     }
                 } else {
                     if (ops.size() != 1 && ops.size() != 2) throw Exception("Invalid");
-                    if (ops.size() == 1) book_system.PrintAllBook();
+                    if (ops.size() == 1) {
+                        book_system.PrintAllBook();
+                        continue;
+                    }
                     if (ops[1].substr(0, 6) == "-ISBN=") {
                         auto&& ISBN = ops[1].substr(6);
                         if (!JudgeISBN(ISBN)) throw Exception("Invalid");
@@ -116,6 +121,23 @@ void Bookstore::Run() {
                         if (!JudgePrice(ops[i].substr(7))) throw Exception("Invalid");
                         type[4] = true;
                     } else throw Exception("Invalid");
+                }
+                for (int i = 1; i < ops.size(); i++) {
+                    if (ops[i][1] == 'I') {
+                        book_system.ModifyBookISBN(ops[i].substr(6));
+                    } else if (ops[i][1] == 'n') {
+                        auto&& bookname = ops[i].substr(6);
+                        book_system.ModifyBookName(bookname.substr(1, bookname.length() - 2));
+                    } else if (ops[i][1] == 'a') {
+                        auto&& author = ops[i].substr(8);
+                        book_system.ModifyBookAuthor(author.substr(1, author.length() - 2));
+                    } else if (ops[i].substr(0, 9) == "-keyword=") {
+                        auto&& keyword = ops[i].substr(9);
+                        book_system.ModifyBookKeyword(keyword.substr(1, keyword.length() - 2));
+                    } else if (ops[i].substr(0, 7) == "-price=") {
+                        double price = std::stod(ops[i].substr(7));
+                        book_system.ModifyBookPrice(price);
+                    }
                 }
             } else if (ops[0] == "import") {
                 if (ops.size() != 3) throw Exception("Invalid");

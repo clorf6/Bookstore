@@ -3,8 +3,10 @@
 //
 #include "Bookstore.h"
 
+Bookstore bookstore;
 int main() {
-    Bookstore bookstore;
+    freopen("a.in","r",stdin);
+    freopen("c.out","w",stdout);
     bookstore.Run();
     return 0;
 }

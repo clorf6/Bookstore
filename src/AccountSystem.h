@@ -21,7 +21,7 @@ struct Account {
     char user_name[30]{};
     int privilege;
 
-    explicit Account(const std::string& _user_ID = "",
+    Account(const std::string& _user_ID = "",
             const std::string& _password = "",
             const std::string& _user_name = "",
             const int& _privilege = 0) : privilege(_privilege) {
@@ -39,12 +39,12 @@ struct OnlineUser {
     int book_pos;
     int user_privilege;
 
-    explicit OnlineUser(const int& User_pos = 0,
-                        const int& Book_pos = 0,
-                        const int& User_privilege = 0) :
-            user_pos(User_pos),
-            book_pos(Book_pos),
-            user_privilege(User_privilege) {};
+    OnlineUser(const int& User_pos = 0,
+               const int& Book_pos = 0,
+               const int& User_privilege = 0) :
+               user_pos(User_pos),
+               book_pos(Book_pos),
+               user_privilege(User_privilege) {};
 };
 
 extern std::vector<OnlineUser> online;
@@ -55,7 +55,6 @@ const size_t kSizeofAccount = sizeof(Account);
 
 class AccountSystem {
 private:
-    BlockLinkedList<int> account_pos = BlockLinkedList<int>("account_pos");
     std::fstream account_data;
 public:
     AccountSystem();
@@ -69,6 +68,8 @@ public:
     void DelAccount(const std::string &);
 //    void GetTop();
     ~AccountSystem();
+
+    BlockLinkedList<int> account_pos;
 };
 
 #endif //BOOKSTORE_ACCOUNTSYSTEM_H

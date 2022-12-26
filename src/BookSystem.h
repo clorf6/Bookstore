@@ -28,14 +28,14 @@ struct Book {
     int quantity;
     double price;
 
-    explicit Book(const std::string& isbn = "",
-                  const std::string& _book_name = "",
-                  const std::string& _author = "",
-                  const std::string& _keyword = "",
-                  const int& _quantity = 0,
-                  const double& _price = 0.0) :
-                  quantity(_quantity),
-                  price(_price) {
+    Book(const std::string& isbn = "",
+         const std::string& _book_name = "",
+         const std::string& _author = "",
+         const std::string& _keyword = "",
+         const int& _quantity = 0,
+         const double& _price = 0.0) :
+         quantity(_quantity),
+         price(_price) {
         memset(ISBN, 0, 20);
         memset(book_name, 0, 60);
         memset(author, 0, 60);
@@ -59,10 +59,10 @@ struct Deal {
     double income;
     double outcome;
 
-    explicit Deal(const double &Income = 0.0,
-                  const double &Outcome = 0.0) :
-            income(Income),
-            outcome(Outcome) {};
+    Deal(const double &Income = 0.0,
+         const double &Outcome = 0.0) :
+         income(Income),
+         outcome(Outcome) {};
 };
 
 const size_t kSizeofDeal = 16;
@@ -70,10 +70,10 @@ static Deal now_deal, pre_deal;
 
 class BookSystem {
 private:
-    BlockLinkedList<int> isbn_pos = BlockLinkedList<int>("isbn_pos");
-    BlockLinkedList<int> book_name_pos = BlockLinkedList<int>("book_name_pos");
-    BlockLinkedList<int> author_pos = BlockLinkedList<int>("author_pos");
-    BlockLinkedList<int> keyword_pos = BlockLinkedList<int>("keyword_pos");
+    BlockLinkedList<int> isbn_pos;
+    BlockLinkedList<int> book_name_pos;
+    BlockLinkedList<int> author_pos;
+    BlockLinkedList<int> keyword_pos;
     std::fstream book_data;
     std::fstream finance;
     std::fstream log_file;
