@@ -13,9 +13,9 @@
 #include <cstring>
 #include <vector>
 #include <cmath>
+#include <iomanip>
 #include <unordered_map>
 #include "AccountSystem.h"
-#include "LogSystem.h"
 #include "BlockLinkedList.h"
 #include "Exception.h"
 #include "Utils.h"
@@ -55,6 +55,19 @@ const size_t kSizeofBook = sizeof(Book);
 static Book now_book;
 static std::vector<Book> ans_book;
 
+struct Deal {
+    double income;
+    double outcome;
+
+    explicit Deal(const double &Income = 0.0,
+                  const double &Outcome = 0.0) :
+            income(Income),
+            outcome(Outcome) {};
+};
+
+const size_t kSizeofDeal = 16;
+static Deal now_deal, pre_deal;
+
 class BookSystem {
 private:
     BlockLinkedList<int> isbn_pos = BlockLinkedList<int>("isbn_pos");
@@ -62,6 +75,9 @@ private:
     BlockLinkedList<int> author_pos = BlockLinkedList<int>("author_pos");
     BlockLinkedList<int> keyword_pos = BlockLinkedList<int>("keyword_pos");
     std::fstream book_data;
+    std::fstream finance;
+    std::fstream log_file;
+    int count;
 public:
     BookSystem();
     void ReadBook(int, Book &);
@@ -81,6 +97,10 @@ public:
     void ModifyBookKeyword(const std::string &);
     void ModifyBookPrice(const double &);
     void ImportBook(const int &, const double &);
+    void ReadDeal(int, Deal &);
+    void WriteDeal(int, Deal &);
+    void NowFinance();
+    void QueryFinance(const int&);
     ~BookSystem();
 };
 

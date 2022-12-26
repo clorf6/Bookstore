@@ -13,6 +13,20 @@ BookSystem::BookSystem() {
         create.open("book_data");
         book_data.open("book_data", std::ios::in | std::ios::out | std::ios::binary);
     }
+    finance.open("finance", std::ios::in | std::ios::out | std::ios::binary);
+    if (!finance.is_open()) {
+        std::ofstream create;
+        create.open("finance");
+        finance.open("finance", std::ios::in | std::ios::out | std::ios::binary);
+    }
+    finance.seekp(0, std::ios::end);
+    count = finance.tellp() / kSizeofDeal;
+    log_file.open("log", std::ios::in | std::ios::out | std::ios::binary);
+    if (!log_file.is_open()) {
+        std::ofstream create;
+        create.open("log");
+        finance.open("log", std::ios::in | std::ios::out | std::ios::binary);
+    }
 }
 
 void BookSystem::ReadBook(int pos,
@@ -34,14 +48,14 @@ void BookSystem::PrintAllBook() {
     isbn_pos.getall();
     if (isbn_pos.ans.empty()) {
         std::cout << '\n';
-        return ;
+        return;
     }
     ans_book.clear();
-    for (int& pos : isbn_pos.ans) {
+    for (int &pos: isbn_pos.ans) {
         ReadBook(pos, now_book);
         ans_book.push_back(now_book);
     }
-    for (auto& now : ans_book) {
+    for (auto &now: ans_book) {
         std::cout << now.ISBN << '\t'
                   << now.book_name << '\t'
                   << now.author << '\t'
@@ -58,15 +72,15 @@ void BookSystem::SearchBookByISBN(const std::string &isbn) {
     isbn_pos.find(isbn);
     if (isbn_pos.ans.empty()) {
         std::cout << '\n';
-        return ;
+        return;
     }
     ans_book.clear();
-    for (int& pos : isbn_pos.ans) {
+    for (int &pos: isbn_pos.ans) {
         ReadBook(pos, now_book);
         ans_book.push_back(now_book);
     }
     std::sort(ans_book.begin(), ans_book.end());
-    for (auto& now : ans_book) {
+    for (auto &now: ans_book) {
         std::cout << now.ISBN << '\t'
                   << now.book_name << '\t'
                   << now.author << '\t'
@@ -83,15 +97,15 @@ void BookSystem::SearchBookByBookName(const std::string &_book_name) {
     book_name_pos.find(_book_name);
     if (book_name_pos.ans.empty()) {
         std::cout << '\n';
-        return ;
+        return;
     }
     ans_book.clear();
-    for (int& pos : book_name_pos.ans) {
+    for (int &pos: book_name_pos.ans) {
         ReadBook(pos, now_book);
         ans_book.push_back(now_book);
     }
     std::sort(ans_book.begin(), ans_book.end());
-    for (auto& now : ans_book) {
+    for (auto &now: ans_book) {
         std::cout << now.ISBN << '\t'
                   << now.book_name << '\t'
                   << now.author << '\t'
@@ -108,15 +122,15 @@ void BookSystem::SearchBookByAuthor(const std::string &_author) {
     author_pos.find(_author);
     if (author_pos.ans.empty()) {
         std::cout << '\n';
-        return ;
+        return;
     }
     ans_book.clear();
-    for (int& pos : author_pos.ans) {
+    for (int &pos: author_pos.ans) {
         ReadBook(pos, now_book);
         ans_book.push_back(now_book);
     }
     std::sort(ans_book.begin(), ans_book.end());
-    for (auto& now : ans_book) {
+    for (auto &now: ans_book) {
         std::cout << now.ISBN << '\t'
                   << now.book_name << '\t'
                   << now.author << '\t'
@@ -130,7 +144,7 @@ void BookSystem::SearchBookByKeyword(const std::string &_keyword) {
     if (online.empty()) {
         throw Exception("Invalid");
     }
-    for (auto& i : _keyword) {
+    for (auto &i: _keyword) {
         if (i == '|') {
             throw Exception("Invalid");
         }
@@ -138,15 +152,15 @@ void BookSystem::SearchBookByKeyword(const std::string &_keyword) {
     keyword_pos.find(_keyword);
     if (keyword_pos.ans.empty()) {
         std::cout << '\n';
-        return ;
+        return;
     }
     ans_book.clear();
-    for (int& pos : keyword_pos.ans) {
+    for (int &pos: keyword_pos.ans) {
         ReadBook(pos, now_book);
         ans_book.push_back(now_book);
     }
     std::sort(ans_book.begin(), ans_book.end());
-    for (auto& now : ans_book) {
+    for (auto &now: ans_book) {
         std::cout << now.ISBN << '\t'
                   << now.book_name << '\t'
                   << now.author << '\t'
@@ -197,7 +211,7 @@ void BookSystem::SelectBook(const std::string &isbn) {
     isbn_pos.find(isbn);
     if (isbn_pos.ans.empty()) {
         online.back().book_pos = AddBook(isbn);
-        return ;
+        return;
     }
     online.back().book_pos = isbn_pos.ans[0];
 }
@@ -246,13 +260,13 @@ void BookSystem::ModifyBookKeyword(const std::string &_keyword) {
     int pos = online.back().book_pos;
     ReadBook(pos, now_book);
     DivideKeyword(now_book.keyword, ans_keyword);
-    for (auto& i : ans_keyword) {
+    for (auto &i: ans_keyword) {
         keyword_pos.erase(Element<int>{i, pos});
     }
     memset(now_book.keyword, 0, 60);
     strcpy(now_book.keyword, _keyword.c_str());
     DivideKeyword(_keyword, ans_keyword);
-    for (auto& i : ans_keyword) {
+    for (auto &i: ans_keyword) {
         keyword_pos.insert(Element<int>{i, pos});
     }
     WriteBook(pos, now_book);
@@ -281,8 +295,42 @@ void BookSystem::ImportBook(const int &_quantity, const double &_totalcost) {
     WriteBook(pos, now_book);
 }
 
+void BookSystem::ReadDeal(int pos, Deal &ret) {
+    finance.seekg((pos - 1) * kSizeofDeal);
+    finance.read(reinterpret_cast<char *>(&ret), kSizeofDeal);
+}
+
+void BookSystem::WriteDeal(int pos, Deal &ret) {
+    finance.seekp((pos - 1) * kSizeofDeal);
+    finance.write(reinterpret_cast<char *>(&ret), kSizeofDeal);
+}
+
+void BookSystem::NowFinance() {
+    ReadDeal(count, now_deal);
+    std::cout << std::fixed << std::setprecision(2)
+              << "+ " << now_deal.income << " - " << now_deal.outcome << '\n';
+}
+
+void BookSystem::QueryFinance(const int &number) {
+    if (!number) {
+        std::cout << '\n';
+        return;
+    }
+    if (number > count) {
+        throw Exception("Invalid");
+    }
+    ReadDeal(count, now_deal);
+    ReadDeal(count - number, pre_deal);
+    std::cout << std::fixed << std::setprecision(2)
+              << "+ " << now_deal.income - pre_deal.income
+              << " - " << now_deal.outcome - pre_deal.outcome << '\n';
+}
+
 BookSystem::~BookSystem() {
     book_data.close();
+    finance.close();
+    log_file.close();
+    count = 0;
 }
 
 #endif //BOOKSTORE_BOOKSYSTEM_CPP

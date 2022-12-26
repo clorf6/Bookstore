@@ -7,7 +7,6 @@
 
 #include "AccountSystem.h"
 #include "BookSystem.h"
-#include "LogSystem.h"
 #include "Exception.h"
 #include "Utils.h"
 
@@ -17,9 +16,9 @@ class Bookstore {
 public:
     AccountSystem account_system;
     BookSystem book_system;
-    Bookstore();
+    Bookstore() = default;
     void Run();
-    ~Bookstore();
+    ~Bookstore() = default;
 };
 
 #endif //BOOKSTORE_BOOKSTORE_H

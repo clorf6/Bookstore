@@ -7,10 +7,6 @@
 
 #include "Bookstore.h"
 
-Bookstore::Bookstore() {
-    OpenLog();
-}
-
 void Bookstore::Run() {
     while (std::getline(std::cin, op)) {
         try {
@@ -60,10 +56,10 @@ void Bookstore::Run() {
             } else if (ops[0] == "show") {
                 if (ops[1] == "finance") {
                     if (ops.size() != 2 && ops.size() != 3) throw Exception("Invalid");
-                    if (ops.size() == 2) NowFinance();
+                    if (ops.size() == 2) book_system.NowFinance();
                     else {
                         if (!JudgeCount(ops[2])) throw Exception("Invalid");
-                        QueryFinance(std::stoi(ops[2]));
+                        book_system.QueryFinance(std::stoi(ops[2]));
                     }
                 } else {
                     if (ops.size() != 1 && ops.size() != 2) throw Exception("Invalid");
@@ -138,8 +134,5 @@ void Bookstore::Run() {
     }
 }
 
-Bookstore::~Bookstore() {
-    CloseLog();
-}
 
 #endif //BOOKSTORE_BOOKSTORE_CPP
