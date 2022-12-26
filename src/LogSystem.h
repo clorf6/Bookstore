@@ -10,10 +10,11 @@
 #include <vector>
 #include <algorithm>
 #include <iomanip>
+#include "Exception.h"
 
-std::fstream finance;
-std::fstream log_file;
-int count;
+extern std::fstream finance;
+extern std::fstream log_file;
+extern int count;
 
 struct Deal {
     double income;
@@ -26,7 +27,11 @@ struct Deal {
 };
 
 const size_t kSizeofDeal = 16;
-Deal now_deal, pre_deal;
+extern Deal now_deal, pre_deal;
+
+void OpenLog();
+
+void CloseLog();
 
 void ReadDeal(int, Deal &);
 
@@ -34,7 +39,7 @@ void WriteDeal(int, Deal &);
 
 void NowFinance();
 
-void QueryFinance(int &);
+void QueryFinance(const int&);
 //void GenerateLog();
 
 #endif //BOOKSTORE_LOGSYSTEM_H

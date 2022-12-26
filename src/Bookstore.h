@@ -8,33 +8,17 @@
 #include "AccountSystem.h"
 #include "BookSystem.h"
 #include "LogSystem.h"
+#include "Exception.h"
 #include "Utils.h"
 
-struct OnlineUser {
-    int user_pos;
-    int book_pos;
-    int user_privilege;
-
-    explicit OnlineUser(const int& User_pos = 0,
-                        const int& Book_pos = 0,
-                        const int& User_privilege = 0) :
-            user_pos(User_pos),
-            book_pos(Book_pos),
-            user_privilege(User_privilege) {};
-};
-
-std::vector<OnlineUser> online;
-static int GetPrivilege();
-static std::ofstream create;
 static std::string op;
 
 class Bookstore {
-private:
+public:
     AccountSystem account_system;
     BookSystem book_system;
-public:
     Bookstore();
-    static void Run();
+    void Run();
     ~Bookstore();
 };
 

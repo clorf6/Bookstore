@@ -9,6 +9,7 @@
 BookSystem::BookSystem() {
     book_data.open("book_data", std::ios::in | std::ios::out | std::ios::binary);
     if (!book_data.is_open()) {
+        std::ofstream create;
         create.open("book_data");
         book_data.open("book_data", std::ios::in | std::ios::out | std::ios::binary);
     }
@@ -28,8 +29,7 @@ void BookSystem::WriteBook(int pos,
 
 void BookSystem::PrintAllBook() {
     if (online.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     isbn_pos.getall();
     if (isbn_pos.ans.empty()) {
@@ -53,8 +53,7 @@ void BookSystem::PrintAllBook() {
 
 void BookSystem::SearchBookByISBN(const std::string &isbn) {
     if (online.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     isbn_pos.find(isbn);
     if (isbn_pos.ans.empty()) {
@@ -79,8 +78,7 @@ void BookSystem::SearchBookByISBN(const std::string &isbn) {
 
 void BookSystem::SearchBookByBookName(const std::string &_book_name) {
     if (online.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     book_name_pos.find(_book_name);
     if (book_name_pos.ans.empty()) {
@@ -105,8 +103,7 @@ void BookSystem::SearchBookByBookName(const std::string &_book_name) {
 
 void BookSystem::SearchBookByAuthor(const std::string &_author) {
     if (online.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     author_pos.find(_author);
     if (author_pos.ans.empty()) {
@@ -131,13 +128,11 @@ void BookSystem::SearchBookByAuthor(const std::string &_author) {
 
 void BookSystem::SearchBookByKeyword(const std::string &_keyword) {
     if (online.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     for (auto& i : _keyword) {
         if (i == '|') {
-            std::cout << "Invalid\n";
-            return ;
+            throw Exception("Invalid");
         }
     }
     keyword_pos.find(_keyword);
@@ -163,19 +158,16 @@ void BookSystem::SearchBookByKeyword(const std::string &_keyword) {
 
 void BookSystem::BuyBook(const std::string &isbn, const int &_quantity) {
     if (online.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     isbn_pos.find(isbn);
     if (isbn_pos.ans.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     int pos = isbn_pos.ans[0];
     ReadBook(pos, now_book);
     if (_quantity > now_book.quantity) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     now_book.quantity -= _quantity;
     double income = now_book.price * _quantity;
@@ -200,8 +192,7 @@ int BookSystem::AddBook(const std::string &isbn) {
 
 void BookSystem::SelectBook(const std::string &isbn) {
     if (GetPrivilege() < 3) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     isbn_pos.find(isbn);
     if (isbn_pos.ans.empty()) {
@@ -211,16 +202,18 @@ void BookSystem::SelectBook(const std::string &isbn) {
     online.back().book_pos = isbn_pos.ans[0];
 }
 
-void BookSystem::ModifyBookISBN(const std::string &isbn) {
+bool BookSystem::JudgeModify() {
     if (GetPrivilege() < 3) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
+    if (!online.back().book_pos) {
+        throw Exception("Invalid");
+    }
+    return true;
+}
+
+void BookSystem::ModifyBookISBN(const std::string &isbn) {
     int pos = online.back().book_pos;
-    if (!pos) {
-        std::cout << "Invalid\n";
-        return ;
-    }
     ReadBook(pos, now_book);
     isbn_pos.erase(Element<int>{now_book.ISBN, pos});
     memset(now_book.ISBN, 0, 20);
@@ -230,15 +223,7 @@ void BookSystem::ModifyBookISBN(const std::string &isbn) {
 }
 
 void BookSystem::ModifyBookName(const std::string &_book_name) {
-    if (GetPrivilege() < 3) {
-        std::cout << "Invalid\n";
-        return ;
-    }
     int pos = online.back().book_pos;
-    if (!pos) {
-        std::cout << "Invalid\n";
-        return ;
-    }
     ReadBook(pos, now_book);
     book_name_pos.erase(Element<int>{now_book.book_name, pos});
     memset(now_book.book_name, 0, 60);
@@ -248,15 +233,7 @@ void BookSystem::ModifyBookName(const std::string &_book_name) {
 }
 
 void BookSystem::ModifyBookAuthor(const std::string &_author) {
-    if (GetPrivilege() < 3) {
-        std::cout << "Invalid\n";
-        return ;
-    }
     int pos = online.back().book_pos;
-    if (!pos) {
-        std::cout << "Invalid\n";
-        return ;
-    }
     ReadBook(pos, now_book);
     author_pos.erase(Element<int>{now_book.author, pos});
     memset(now_book.author, 0, 60);
@@ -265,38 +242,8 @@ void BookSystem::ModifyBookAuthor(const std::string &_author) {
     WriteBook(pos, now_book);
 }
 
-void DivideKeyword(const std::string &_keyword, std::vector<std::string> &ret_keyword) {
-    ret_keyword.clear();
-    std::string now_keyword = "";
-    for (auto& i : _keyword) {
-        if (i == '|') {
-            ret_keyword.push_back(now_keyword);
-            now_keyword.clear();
-        } else {
-            now_keyword += i;
-        }
-    }
-    ret_keyword.push_back(now_keyword);
-}
-
 void BookSystem::ModifyBookKeyword(const std::string &_keyword) {
-    if (GetPrivilege() < 3) {
-        std::cout << "Invalid\n";
-        return ;
-    }
     int pos = online.back().book_pos;
-    if (!pos) {
-        std::cout << "Invalid\n";
-        return ;
-    }
-    DivideKeyword(_keyword, new_keyword);
-    std::sort(new_keyword.begin(), new_keyword.end());
-    for (int i = 1; i < new_keyword.size(); i++) {
-        if (new_keyword[i - 1] == new_keyword[i]) {
-            std::cout << "Invalid\n";
-            return ;
-        }
-    }
     ReadBook(pos, now_book);
     DivideKeyword(now_book.keyword, ans_keyword);
     for (auto& i : ans_keyword) {
@@ -304,22 +251,15 @@ void BookSystem::ModifyBookKeyword(const std::string &_keyword) {
     }
     memset(now_book.keyword, 0, 60);
     strcpy(now_book.keyword, _keyword.c_str());
-    for (auto& i : new_keyword) {
+    DivideKeyword(_keyword, ans_keyword);
+    for (auto& i : ans_keyword) {
         keyword_pos.insert(Element<int>{i, pos});
     }
     WriteBook(pos, now_book);
 }
 
 void BookSystem::ModifyBookPrice(const double &_price) {
-    if (GetPrivilege() < 3) {
-        std::cout << "Invalid\n";
-        return ;
-    }
     int pos = online.back().book_pos;
-    if (!pos) {
-        std::cout << "Invalid\n";
-        return ;
-    }
     ReadBook(pos, now_book);
     now_book.price = _price;
     WriteBook(pos, now_book);
@@ -327,13 +267,11 @@ void BookSystem::ModifyBookPrice(const double &_price) {
 
 void BookSystem::ImportBook(const int &_quantity, const double &_totalcost) {
     if (GetPrivilege() < 3) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     int pos = online.back().book_pos;
     if (!pos) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     ReadBook(pos, now_book);
     now_book.quantity += _quantity;

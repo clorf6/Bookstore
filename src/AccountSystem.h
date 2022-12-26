@@ -13,7 +13,7 @@
 #include <vector>
 #include <unordered_map>
 #include "BlockLinkedList.h"
-#include "Bookstore.h"
+#include "Exception.h"
 
 struct Account {
     char user_id[30]{};
@@ -34,10 +34,24 @@ struct Account {
     };
 };
 
-const size_t kSizeofAccount = sizeof(Account);
-static Account now_account;
+struct OnlineUser {
+    int user_pos;
+    int book_pos;
+    int user_privilege;
 
+    explicit OnlineUser(const int& User_pos = 0,
+                        const int& Book_pos = 0,
+                        const int& User_privilege = 0) :
+            user_pos(User_pos),
+            book_pos(Book_pos),
+            user_privilege(User_privilege) {};
+};
+
+extern std::vector<OnlineUser> online;
+extern int GetPrivilege();
+static Account now_account;
 static std::unordered_map<int, int> is_login;
+const size_t kSizeofAccount = sizeof(Account);
 
 class AccountSystem {
 private:
@@ -48,7 +62,7 @@ public:
     void ReadAccount(int, Account &);
     void WriteAccount(int, Account &);
     void LoginAccount(const std::string &, const std::string &);
-    static void LogoutAccount();
+    void LogoutAccount();
     void RegisterAccount(const std::string &, const std::string &, const std::string &);
     void ChangePassword(const std::string &, const std::string &, const std::string &);
     void AddAccount(const std::string &, const std::string &, const int &, const std::string &);

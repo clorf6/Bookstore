@@ -17,7 +17,8 @@
 #include "AccountSystem.h"
 #include "LogSystem.h"
 #include "BlockLinkedList.h"
-#include "Bookstore.h"
+#include "Exception.h"
+#include "Utils.h"
 
 struct Book {
     char ISBN[20]{};
@@ -53,9 +54,6 @@ struct Book {
 const size_t kSizeofBook = sizeof(Book);
 static Book now_book;
 static std::vector<Book> ans_book;
-static std::vector<std::string> ans_keyword, new_keyword;
-
-void DivideKeyword(const std::string &, std::vector<std::string> &);
 
 class BookSystem {
 private:
@@ -76,6 +74,7 @@ public:
     void BuyBook(const std::string &, const int &);
     int AddBook(const std::string &);
     void SelectBook(const std::string &);
+    bool JudgeModify();
     void ModifyBookISBN(const std::string &);
     void ModifyBookName(const std::string &);
     void ModifyBookAuthor(const std::string &);

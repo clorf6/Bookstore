@@ -14,8 +14,8 @@
 #include <utility>
 
 const int kNodeSize = 316;
-const int kMaxIndexLength = 64;
-const size_t kSizeofIndex = 64;
+const int kMaxIndexLength = 60;
+const size_t kSizeofIndex = 60;
 static char *buffer;
 
 template<class T>

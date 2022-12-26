@@ -6,9 +6,20 @@
 
 #include "AccountSystem.h"
 
+std::vector<OnlineUser> online;
+
+
+int GetPrivilege() {
+    if (online.empty()) {
+        return 0;
+    }
+    return online.back().user_privilege;
+}
+
 AccountSystem::AccountSystem() {
     account_data.open("account_data", std::ios::in | std::ios::out | std::ios::binary);
     if (!account_data.is_open()) {
+        std::ofstream create;
         create.open("account_data");
         account_data.open("account_data", std::ios::in | std::ios::out | std::ios::binary);
     }
@@ -35,14 +46,12 @@ void AccountSystem::LoginAccount(const std::string &User_ID,
                                  const std::string &Password = "") {
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     int pos = account_pos.ans[0];
     ReadAccount(pos, now_account);
     if (now_account.password != Password && GetPrivilege() <= now_account.privilege) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     online.emplace_back(pos, 0, now_account.privilege);
     is_login[pos]++;
@@ -50,8 +59,7 @@ void AccountSystem::LoginAccount(const std::string &User_ID,
 
 void AccountSystem::LogoutAccount() {
     if (online.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     is_login[online.back().user_pos]--;
     online.pop_back();
@@ -62,8 +70,7 @@ void AccountSystem::RegisterAccount(const std::string &User_ID,
                                     const std::string &User_name) {
     account_pos.find(User_ID);
     if (!account_pos.ans.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     Account new_account(User_ID, Password, User_name, 1);
     account_data.seekp(0, std::ios::end);
@@ -76,19 +83,16 @@ void AccountSystem::ChangePassword(const std::string &User_ID,
                                    const std::string &CurPasswd,
                                    const std::string &NewPasswd) {
     if (online.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     int pos = account_pos.ans[0];
     ReadAccount(pos, now_account);
     if (now_account.password != CurPasswd && GetPrivilege() != 7) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     memset(now_account.password, 0, 30);
     strcpy(now_account.password, NewPasswd.c_str());
@@ -100,17 +104,14 @@ void AccountSystem::AddAccount(const std::string &User_ID,
                                const int &Privilege,
                                const std::string &User_name) {
     if (GetPrivilege() < 3) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     if (GetPrivilege() <= Privilege) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     account_pos.find(User_ID);
     if (!account_pos.ans.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     Account new_account(User_ID, Password, User_name, Privilege);
     account_data.seekp(0, std::ios::end);
@@ -121,18 +122,15 @@ void AccountSystem::AddAccount(const std::string &User_ID,
 
 void AccountSystem::DelAccount(const std::string &User_ID) {
     if (GetPrivilege() < 7) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     int pos = account_pos.ans[0];
     if (is_login[pos]) {
-        std::cout << "Invalid\n";
-        return ;
+        throw Exception("Invalid");
     }
     account_pos.erase(Element<int>{User_ID, pos});
 }
