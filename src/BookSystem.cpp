@@ -27,7 +27,7 @@ BookSystem::BookSystem(): isbn_pos("isbnpos"), book_name_pos("booknamepos"),
     if (!count) {
         now_deal = Deal{0.0, 0.0};
         WriteDeal(1, now_deal);
-    }
+    } else count--;
     log_file.open("log", std::ios::in | std::ios::out | std::ios::binary);
     if (!log_file.is_open()) {
         std::ofstream create;
@@ -306,12 +306,12 @@ void BookSystem::ImportBook(const int &_quantity, const double &_totalcost) {
 }
 
 void BookSystem::ReadDeal(int pos, Deal &ret) {
-    finance.seekg((pos - 1) * kSizeofDeal);
+    finance.seekg(pos * kSizeofDeal);
     finance.read(reinterpret_cast<char *>(&ret), kSizeofDeal);
 }
 
 void BookSystem::WriteDeal(int pos, Deal &ret) {
-    finance.seekp((pos - 1) * kSizeofDeal);
+    finance.seekp(pos * kSizeofDeal);
     finance.write(reinterpret_cast<char *>(&ret), kSizeofDeal);
 }
 
