@@ -8,11 +8,9 @@
 #include "Bookstore.h"
 
 void Bookstore::Run() {
-    while (std::getline(std::cin, op)) {
+    while (getline(std::cin, op)) {
         try {
-            if (op == "quit" || op == "exit") {
-                break;
-            }
+            if (op == "quit" || op == "exit") break;
             DivideOperation(op);
             if (ops[0] == "su") {
                 if (ops.size() != 2 && ops.size() != 3) throw Exception("Invalid");

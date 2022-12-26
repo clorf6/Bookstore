@@ -3,9 +3,8 @@
 //
 #include "Bookstore.h"
 
-Bookstore bookstore;
-
 int main() {
+    Bookstore bookstore;
     bookstore.Run();
     return 0;
 }

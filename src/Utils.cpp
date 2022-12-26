@@ -6,6 +6,8 @@
 
 #include "Utils.h"
 
+std::vector<std::string> ops;
+
 void DivideOperation(const std::string& Op) {
     now_op.clear();
     ops.clear();

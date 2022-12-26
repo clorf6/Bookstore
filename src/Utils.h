@@ -12,7 +12,7 @@
 #include <vector>
 #include "Exception.h"
 
-static std::vector<std::string> ops;
+extern std::vector<std::string> ops;
 static std::string now_op;
 static std::vector<std::string> ans_keyword;
 

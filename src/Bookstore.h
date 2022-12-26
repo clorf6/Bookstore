@@ -13,9 +13,10 @@
 static std::string op;
 
 class Bookstore {
-public:
+private:
     AccountSystem account_system;
     BookSystem book_system;
+public:
     Bookstore() = default;
     void Run();
     ~Bookstore() = default;
