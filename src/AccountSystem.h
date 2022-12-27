@@ -47,10 +47,10 @@ struct OnlineUser {
                user_privilege(User_privilege) {};
 };
 
+extern std::unordered_map<int, int> is_login;
 extern std::vector<OnlineUser> online;
 extern int GetPrivilege();
 static Account now_account;
-static std::unordered_map<int, int> is_login;
 const size_t kSizeofAccount = sizeof(Account);
 
 class AccountSystem {

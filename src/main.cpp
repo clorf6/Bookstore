@@ -5,6 +5,7 @@
 
 Bookstore bookstore;
 int main() {
+    freopen("a.in","r",stdin);
     //freopen("c.out","w",stdout);
     bookstore.Run();
     return 0;

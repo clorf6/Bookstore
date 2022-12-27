@@ -11,6 +11,7 @@ void Bookstore::Run() {
     while (getline(std::cin, op)) {
         try {
             DivideOperation(op);
+            if (ops.empty()) continue;
             if (ops[0] == "exit" || ops[0] == "quit") {
                 if (ops.size() != 1) throw Exception("Invalid");
                 break;

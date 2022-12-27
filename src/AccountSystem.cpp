@@ -7,7 +7,7 @@
 #include "AccountSystem.h"
 
 std::vector<OnlineUser> online;
-
+std::unordered_map<int, int> is_login;
 
 int GetPrivilege() {
     if (online.empty()) {
