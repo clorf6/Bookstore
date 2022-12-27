@@ -16,18 +16,18 @@
 #include "Exception.h"
 
 struct Account {
-    char user_id[30]{};
-    char password[30]{};
-    char user_name[30]{};
+    char user_id[31]{};
+    char password[31]{};
+    char user_name[31]{};
     int privilege;
 
     Account(const std::string& _user_ID = "",
             const std::string& _password = "",
             const std::string& _user_name = "",
             const int& _privilege = 0) : privilege(_privilege) {
-        memset(user_id, 0, 30);
-        memset(password, 0, 30);
-        memset(user_name, 0, 30);
+        memset(user_id, 0, 31);
+        memset(password, 0, 31);
+        memset(user_name, 0, 31);
         strcpy(user_id, _user_ID.c_str());
         strcpy(password, _password.c_str());
         strcpy(user_name,_user_name.c_str());

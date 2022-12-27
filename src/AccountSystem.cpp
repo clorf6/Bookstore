@@ -28,7 +28,6 @@ AccountSystem::AccountSystem(): account_pos("accountpos") {
         account_pos.insert(Element<int>{"root", 1});
     }
     online.clear();
-    online.emplace_back(1, 0, 7);
 }
 
 void AccountSystem::ReadAccount(int pos,
@@ -44,13 +43,14 @@ void AccountSystem::WriteAccount(int pos,
 }
 
 void AccountSystem::LoginAccount(const std::string &User_ID,
-                                 const std::string &Password = "") {
+                                 const std::string &Password) {
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
         throw Exception("Invalid");
     }
     int pos = account_pos.ans[0];
     ReadAccount(pos, now_account);
+    //printf("fucking %s\n",now_account.password);
     if (now_account.password != Password && GetPrivilege() <= now_account.privilege) {
         throw Exception("Invalid");
     }
@@ -95,7 +95,7 @@ void AccountSystem::ChangePassword(const std::string &User_ID,
     if (now_account.password != CurPasswd && GetPrivilege() != 7) {
         throw Exception("Invalid");
     }
-    memset(now_account.password, 0, 30);
+    memset(now_account.password, 0, 31);
     strcpy(now_account.password, NewPasswd.c_str());
     WriteAccount(pos, now_account);
 }

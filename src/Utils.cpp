@@ -72,7 +72,7 @@ void DivideKeyword(const std::string &_keyword, std::vector<std::string> &ret_ke
             now_keyword += i;
         }
     }
-    ret_keyword.push_back(now_keyword);
+    if (!now_keyword.empty()) ret_keyword.push_back(now_keyword);
 }
 
 bool JudgeKeyword(const std::string& s) {

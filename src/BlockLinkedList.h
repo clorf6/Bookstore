@@ -87,7 +87,7 @@ template<class T>
 class BlockLinkedList {
 private:
     std::fstream file;
-    const size_t kSizeofElement = 64 + sizeof(T);
+    const size_t kSizeofElement = kSizeofIndex + sizeof(T);
     const size_t kSizeofNodeInfo = 16 + kSizeofElement;
     const size_t kSizeofNode = kSizeofNodeInfo + (kNodeSize << 1) * kSizeofElement;
     Node<T> now, nex, las;

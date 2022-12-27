@@ -242,7 +242,7 @@ void BookSystem::ModifyBookISBN(const std::string &isbn) {
     isbn_pos.find(isbn);
     if (!isbn_pos.ans.empty()) throw Exception("Invalid");
     isbn_pos.erase(Element<int>{now_book.ISBN, pos});
-    memset(now_book.ISBN, 0, 20);
+    memset(now_book.ISBN, 0, 21);
     strcpy(now_book.ISBN, isbn.c_str());
     isbn_pos.insert(Element<int>{isbn, pos});
     WriteBook(pos, now_book);
@@ -252,7 +252,7 @@ void BookSystem::ModifyBookName(const std::string &_book_name) {
     int pos = online.back().book_pos;
     ReadBook(pos, now_book);
     book_name_pos.erase(Element<int>{now_book.book_name, pos});
-    memset(now_book.book_name, 0, 60);
+    memset(now_book.book_name, 0, 61);
     strcpy(now_book.book_name, _book_name.c_str());
     book_name_pos.insert(Element<int>{_book_name, pos});
     WriteBook(pos, now_book);
@@ -262,7 +262,7 @@ void BookSystem::ModifyBookAuthor(const std::string &_author) {
     int pos = online.back().book_pos;
     ReadBook(pos, now_book);
     author_pos.erase(Element<int>{now_book.author, pos});
-    memset(now_book.author, 0, 60);
+    memset(now_book.author, 0, 61);
     strcpy(now_book.author, _author.c_str());
     author_pos.insert(Element<int>{_author, pos});
     WriteBook(pos, now_book);
@@ -275,7 +275,7 @@ void BookSystem::ModifyBookKeyword(const std::string &_keyword) {
     for (auto &i: ans_keyword) {
         keyword_pos.erase(Element<int>{i, pos});
     }
-    memset(now_book.keyword, 0, 60);
+    memset(now_book.keyword, 0, 61);
     strcpy(now_book.keyword, _keyword.c_str());
     DivideKeyword(_keyword, ans_keyword);
     for (auto &i: ans_keyword) {

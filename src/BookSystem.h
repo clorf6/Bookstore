@@ -21,10 +21,10 @@
 #include "Utils.h"
 
 struct Book {
-    char ISBN[20]{};
-    char book_name[60]{};
-    char author[60]{};
-    char keyword[60]{};
+    char ISBN[21]{};
+    char book_name[61]{};
+    char author[61]{};
+    char keyword[61]{};
     int quantity;
     double price;
 
@@ -36,10 +36,10 @@ struct Book {
          const double& _price = 0.0) :
          quantity(_quantity),
          price(_price) {
-        memset(ISBN, 0, 20);
-        memset(book_name, 0, 60);
-        memset(author, 0, 60);
-        memset(keyword, 0, 60);
+        memset(ISBN, 0, 21);
+        memset(book_name, 0, 61);
+        memset(author, 0, 61);
+        memset(keyword, 0, 61);
         strcpy(ISBN, isbn.c_str());
         strcpy(book_name, _book_name.c_str());
         strcpy(author, _author.c_str());
