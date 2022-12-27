@@ -23,10 +23,10 @@ AccountSystem::AccountSystem(): account_pos("accountpos") {
         create.open("accountdata");
         create.close();
         account_data.open("accountdata", std::ios::in | std::ios::out | std::ios::binary);
+        Account root("root", "sjtu", "root", 7);
+        WriteAccount(1, root);
+        account_pos.insert(Element<int>{"root", 1});
     }
-    Account root("root", "sjtu", "root", 7);
-    WriteAccount(1, root);
-    account_pos.insert(Element<int>{"root", 1});
     online.clear();
     online.emplace_back(1, 0, 7);
 }
