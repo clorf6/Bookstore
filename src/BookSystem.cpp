@@ -239,6 +239,8 @@ void BookSystem::ModifyBookISBN(const std::string &isbn) {
     int pos = online.back().book_pos;
     ReadBook(pos, now_book);
     if (now_book.ISBN == isbn) throw Exception("Invalid");
+    isbn_pos.find(isbn);
+    if (!isbn_pos.ans.empty()) throw Exception("Invalid");
     isbn_pos.erase(Element<int>{now_book.ISBN, pos});
     memset(now_book.ISBN, 0, 20);
     strcpy(now_book.ISBN, isbn.c_str());
