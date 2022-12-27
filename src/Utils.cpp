@@ -19,7 +19,7 @@ void DivideOperation(const std::string& Op) {
             now_op += i;
         }
     }
-    ops.push_back(now_op);
+    if (!now_op.empty()) ops.push_back(now_op);
 }
 
 bool JudgeUserIDAndPasswd(const std::string& s) {
