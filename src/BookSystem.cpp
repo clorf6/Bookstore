@@ -318,12 +318,18 @@ void BookSystem::WriteDeal(int pos, Deal &ret) {
 }
 
 void BookSystem::NowFinance() {
+    if (GetPrivilege() < 7) {
+        throw Exception("Invalid");
+    }
     ReadDeal(count, now_deal);
     std::cout << std::fixed << std::setprecision(2)
               << "+ " << now_deal.income << " - " << now_deal.outcome << '\n';
 }
 
 void BookSystem::QueryFinance(const int &number) {
+    if (GetPrivilege() < 7) {
+        throw Exception("Invalid");
+    }
     if (!number) {
         std::cout << '\n';
         return;
