@@ -33,7 +33,7 @@ BookSystem::BookSystem(): isbn_pos("isbnpos"), book_name_pos("booknamepos"),
         std::ofstream create;
         create.open("log");
         create.close();
-        finance.open("log", std::ios::in | std::ios::out | std::ios::binary);
+        log_file.open("log", std::ios::in | std::ios::out | std::ios::binary);
     }
 }
 

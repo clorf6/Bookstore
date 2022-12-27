@@ -54,7 +54,7 @@ void Bookstore::Run() {
                 if (!JudgeUserIDAndPasswd(ops[1])) throw Exception("Invalid");
                 account_system.DelAccount(ops[1]);
             } else if (ops[0] == "show") {
-                if (ops[1] == "finance") {
+                if (ops.size() >= 2 && ops[1] == "finance") {
                     if (ops.size() != 2 && ops.size() != 3) throw Exception("Invalid");
                     if (ops.size() == 2) book_system.NowFinance();
                     else {
