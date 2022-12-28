@@ -28,6 +28,7 @@ AccountSystem::AccountSystem(): account_pos("accountpos") {
         account_pos.insert(Element<int>{"root", 1});
     }
     online.clear();
+    is_login.clear();
 }
 
 void AccountSystem::ReadAccount(int pos,
@@ -122,7 +123,7 @@ void AccountSystem::AddAccount(const std::string &User_ID,
 }
 
 void AccountSystem::DelAccount(const std::string &User_ID) {
-    if (GetPrivilege() < 7) {
+    if (GetPrivilege() != 7) {
         throw Exception("Invalid");
     }
     account_pos.find(User_ID);

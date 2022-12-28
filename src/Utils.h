@@ -17,7 +17,7 @@ static std::string now_op;
 static std::vector<std::string> ans_keyword;
 
 const long long maxnum = 2147483647;
-const double eps = 1e-7;
+const double eps = 1e-10;
 
 void DivideOperation(const std::string&);
 
