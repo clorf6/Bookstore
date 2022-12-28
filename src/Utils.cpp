@@ -116,7 +116,7 @@ bool JudgePrice(const std::string& s) {
 }
 
 bool JudgeCost(const std::string& s) {
-    if (!JudgePrice(s) || std::stod(s) == 0) return false;
+    if (!JudgePrice(s) || std::stod(s) <= eps) return false;
     return true;
 }
 

@@ -26,7 +26,7 @@ BookSystem::BookSystem(): isbn_pos("isbnpos"), book_name_pos("booknamepos"),
     count = finance.tellp() / kSizeofDeal;
     if (!count) {
         now_deal = Deal{0.0, 0.0};
-        WriteDeal(1, now_deal);
+        WriteDeal(0, now_deal);
     } else count--;
     log_file.open("log", std::ios::in | std::ios::out | std::ios::binary);
     if (!log_file.is_open()) {
