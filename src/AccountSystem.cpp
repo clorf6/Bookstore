@@ -48,14 +48,14 @@ void AccountSystem::LoginAccount(const std::string &User_ID,
                                  const std::string &Password) {
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
-        throw Exception("Invalid");
+        throw Exception("This account is not found");
     }
     int pos = account_pos.ans[0];
     ReadAccount(pos, now_account);
     //printf("fucking %s\n",now_account.password);
     if (now_account.password != Password) {
         if (!Password.empty() || GetPrivilege() <= now_account.privilege) {
-            throw Exception("Invalid");
+            throw Exception("Wrong password");
         }
     }
     online.emplace_back(pos, 0, now_account.privilege);
@@ -64,7 +64,7 @@ void AccountSystem::LoginAccount(const std::string &User_ID,
 
 void AccountSystem::LogoutAccount() {
     if (online.empty()) {
-        throw Exception("Invalid");
+        throw Exception("No logged in account");
     }
     is_login[online.back().user_pos]--;
     online.pop_back();
@@ -75,7 +75,7 @@ void AccountSystem::RegisterAccount(const std::string &User_ID,
                                     const std::string &User_name) {
     account_pos.find(User_ID);
     if (!account_pos.ans.empty()) {
-        throw Exception("Invalid");
+        throw Exception("This UserID has been registered");
     }
     Account new_account(User_ID, Password, User_name, 1);
     account_data.seekp(0, std::ios::end);
@@ -88,17 +88,17 @@ void AccountSystem::ChangePassword(const std::string &User_ID,
                                    const std::string &CurPasswd,
                                    const std::string &NewPasswd) {
     if (online.empty()) {
-        throw Exception("Invalid");
+        throw Exception("No logged in account");
     }
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
-        throw Exception("Invalid");
+        throw Exception("This account is not found");
     }
     int pos = account_pos.ans[0];
     ReadAccount(pos, now_account);
     if (now_account.password != CurPasswd) {
         if (!CurPasswd.empty() || GetPrivilege() != 7) {
-            throw Exception("Invalid");
+            throw Exception("Wrong password");
         }
     }
     memset(now_account.password, 0, 31);
@@ -111,14 +111,14 @@ void AccountSystem::AddAccount(const std::string &User_ID,
                                const int &Privilege,
                                const std::string &User_name) {
     if (GetPrivilege() < 3) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     if (GetPrivilege() <= Privilege) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     account_pos.find(User_ID);
     if (!account_pos.ans.empty()) {
-        throw Exception("Invalid");
+        throw Exception("This UserID has been registered");
     }
     Account new_account(User_ID, Password, User_name, Privilege);
     account_data.seekp(0, std::ios::end);
@@ -129,15 +129,15 @@ void AccountSystem::AddAccount(const std::string &User_ID,
 
 void AccountSystem::DelAccount(const std::string &User_ID) {
     if (GetPrivilege() != 7) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     account_pos.find(User_ID);
     if (account_pos.ans.empty()) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     int pos = account_pos.ans[0];
     if (is_login[pos]) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     account_pos.erase(Element<int>{User_ID, pos});
 }

@@ -44,7 +44,7 @@ void BookSystem::WriteBook(int pos,
 
 void BookSystem::PrintAllBook() {
     if (online.empty()) {
-        throw Exception("Invalid");
+        throw Exception("No logged in account");
     }
     isbn_pos.getall();
     if (isbn_pos.ans.empty()) {
@@ -65,7 +65,7 @@ void BookSystem::PrintAllBook() {
 
 void BookSystem::SearchBookByISBN(const std::string &isbn) {
     if (online.empty()) {
-        throw Exception("Invalid");
+        throw Exception("No logged in account");
     }
     isbn_pos.find(isbn);
     if (isbn_pos.ans.empty()) {
@@ -91,7 +91,7 @@ void BookSystem::SearchBookByISBN(const std::string &isbn) {
 
 void BookSystem::SearchBookByBookName(const std::string &_book_name) {
     if (online.empty()) {
-        throw Exception("Invalid");
+        throw Exception("No logged in account");
     }
     book_name_pos.find(_book_name);
     if (book_name_pos.ans.empty()) {
@@ -117,7 +117,7 @@ void BookSystem::SearchBookByBookName(const std::string &_book_name) {
 
 void BookSystem::SearchBookByAuthor(const std::string &_author) {
     if (online.empty()) {
-        throw Exception("Invalid");
+        throw Exception("No logged in account");
     }
     author_pos.find(_author);
     if (author_pos.ans.empty()) {
@@ -143,11 +143,11 @@ void BookSystem::SearchBookByAuthor(const std::string &_author) {
 
 void BookSystem::SearchBookByKeyword(const std::string &_keyword) {
     if (online.empty()) {
-        throw Exception("Invalid");
+        throw Exception("No logged in account");
     }
     for (auto &i: _keyword) {
         if (i == '|') {
-            throw Exception("Invalid");
+            throw Exception("Repetitive keywords");
         }
     }
     keyword_pos.find(_keyword);
@@ -174,16 +174,16 @@ void BookSystem::SearchBookByKeyword(const std::string &_keyword) {
 
 void BookSystem::BuyBook(const std::string &isbn, const int &_quantity) {
     if (online.empty()) {
-        throw Exception("Invalid");
+        throw Exception("No logged in account");
     }
     isbn_pos.find(isbn);
     if (isbn_pos.ans.empty()) {
-        throw Exception("Invalid");
+        throw Exception("This book is not found");
     }
     int pos = isbn_pos.ans[0];
     ReadBook(pos, now_book);
     if (_quantity > now_book.quantity) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient stock");
     }
     now_book.quantity -= _quantity;
     double income = now_book.price * _quantity;
@@ -208,7 +208,7 @@ int BookSystem::AddBook(const std::string &isbn) {
 
 void BookSystem::SelectBook(const std::string &isbn) {
     if (GetPrivilege() < 3) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     isbn_pos.find(isbn);
     if (isbn_pos.ans.empty()) {
@@ -220,10 +220,10 @@ void BookSystem::SelectBook(const std::string &isbn) {
 
 bool BookSystem::JudgeModify() {
     if (GetPrivilege() < 3) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     if (!online.back().book_pos) {
-        throw Exception("Invalid");
+        throw Exception("No book selected");
     }
     return true;
 }
@@ -231,9 +231,11 @@ bool BookSystem::JudgeModify() {
 void BookSystem::ModifyBookISBN(const std::string &isbn) {
     int pos = online.back().book_pos;
     ReadBook(pos, now_book);
-    if (now_book.ISBN == isbn) throw Exception("Invalid");
+    if (now_book.ISBN == isbn) {
+        throw Exception("The new ISBN cannot be the same as the original ISBN");
+    }
     isbn_pos.find(isbn);
-    if (!isbn_pos.ans.empty()) throw Exception("Invalid");
+    if (!isbn_pos.ans.empty()) throw Exception("This ISBN has been registered");
     isbn_pos.erase(Element<int>{now_book.ISBN, pos});
     memset(now_book.ISBN, 0, 21);
     strcpy(now_book.ISBN, isbn.c_str());
@@ -286,11 +288,11 @@ void BookSystem::ModifyBookPrice(const double &_price) {
 
 void BookSystem::ImportBook(const int &_quantity, const double &_totalcost) {
     if (GetPrivilege() < 3) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     int pos = online.back().book_pos;
     if (!pos) {
-        throw Exception("Invalid");
+        throw Exception("No book selected");
     }
     ReadBook(pos, now_book);
     now_book.quantity += _quantity;
@@ -312,7 +314,7 @@ void BookSystem::WriteDeal(int pos, Deal &ret) {
 
 void BookSystem::NowFinance() {
     if (GetPrivilege() < 7) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     ReadDeal(count, now_deal);
     std::cout << std::fixed << std::setprecision(2)
@@ -321,14 +323,14 @@ void BookSystem::NowFinance() {
 
 void BookSystem::QueryFinance(const int &number) {
     if (GetPrivilege() < 7) {
-        throw Exception("Invalid");
+        throw Exception("Insufficient permissions");
     }
     if (!number) {
         std::cout << '\n';
         return;
     }
     if (number > count) {
-        throw Exception("Invalid");
+        throw Exception("The number exceeds the total number of transactions");
     } else if (number == count) {
         NowFinance();
         return;
