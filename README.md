@@ -26,11 +26,28 @@ Written by clorf/蒋松霖
 
 ##### 主题逻辑说明
 
-对于每个系统独立开一个特定的类，并在类中实现对应的操作函数。同时在输入时便要维护一个日志文件，将信息输入到日志中。对于各种指令操作，需要开一个登录栈来记录实时操作的账户。
+对于每个系统独立开一个特定的类，并在类中实现对应的操作函数。同时在输入时便要维护一个日志文件，将信息输入到日志中。对于各种指令操作，需要开一个登录栈来记录实时操作的账户。对于不合法的操作则通过报错得到错误信息。
 
 ##### 代码文件结构
 
-暂无
+```
+Bookstore
+├─ .gitignore
+├─ CMakeLists.txt
+├─ README.md
+└─ src
+   ├─ AccountSystem.cpp
+   ├─ AccountSystem.h
+   ├─ BlockLinkedList.h
+   ├─ Bookstore.cpp
+   ├─ Bookstore.h
+   ├─ BookSystem.cpp
+   ├─ BookSystem.h
+   ├─ Exception.h
+   ├─ main.cpp
+   ├─ Utils.cpp
+   └─ Utils.h
+```
 
 ##### 类的接口及成员
 
@@ -38,91 +55,189 @@ Written by clorf/蒋松霖
 
 ```cpp
 struct Account {
-    std::string user_ID;
-    std::string password;
-    std::string user_name;
+    char user_id[31]{};
+    char password[31]{};
+    char user_name[31]{};
     int privilege;
-}
+
+    Account(const std::string &_user_ID = "",
+            const std::string &_password = "",
+            const std::string &_user_name = "",
+            const int &_privilege = 0)；
+};
+
+struct OnlineUser {
+    int user_pos;
+    int book_pos;
+    int user_privilege;
+
+    OnlineUser(const int &User_pos = 0,
+               const int &Book_pos = 0,
+               const int &User_privilege = 0) :
+            user_pos(User_pos),
+            book_pos(Book_pos),
+            user_privilege(User_privilege) {};
+};
+
+extern std::unordered_map<int, int> is_login;
+extern std::vector<OnlineUser> online;
+
+extern int GetPrivilege();
+
+extern Account now_account;
+const size_t kSizeofAccount = sizeof(Account);
 
 class AccountSystem {
-    private:
-    	BlockLinkedList<Account, int> account_data;
-    public:
-    	AccountSystem();
-        void RegisterAccount(std::string &, std::string &, std::string &);
-        void ChangePassword(std::string &, std::string &, std::string &);
-        void AddAccount(std::string &, std::string &, int &, std::string &);
-        void DelAccount(std::string &);
-    	~AccountSystem();
-}
+private:
+    std::fstream account_data;
+    BlockLinkedList<int> account_pos;
+public:
+    AccountSystem();
+
+    void ReadAccount(int, Account &);
+
+    void WriteAccount(int, Account &);
+
+    void LoginAccount(const std::string &, const std::string &);
+
+    void LogoutAccount();
+
+    void RegisterAccount(const std::string &, const std::string &, const std::string &);
+
+    void ChangePassword(const std::string &, const std::string &, const std::string &);
+
+    void AddAccount(const std::string &, const std::string &, const int &, const std::string &);
+
+    void DelAccount(const std::string &);
+
+    ~AccountSystem();
+};
 ```
 
 图书系统类：
 
 ```cpp
 struct Book {
-    std::string ISBN;
-    std::string book_name;
-    std::string author;
-    std::vector<std::string> keyword;
+    char ISBN[21]{};
+    char book_name[61]{};
+    char author[61]{};
+    char keyword[61]{};
     int quantity;
     double price;
-    double total_cost;
-}
+
+    Book(const std::string &isbn = "",
+         const std::string &_book_name = "",
+         const std::string &_author = "",
+         const std::string &_keyword = "",
+         const int &_quantity = 0,
+         const double &_price = 0.0)；
+
+    bool operator<(const Book &x) const；
+};
+
+const size_t kSizeofBook = sizeof(Book);
+static Book now_book;
+static std::vector<Book> ans_book;
+
+struct Deal {
+    double income;
+    double outcome;
+
+    Deal(const double &Income = 0.0,
+         const double &Outcome = 0.0)；
+};
+
+const size_t kSizeofDeal = 16;
+static Deal now_deal, pre_deal;
 
 class BookSystem {
-    private:
-        BlockLinkedList<Book, int> book_data;
-    public:
-        BookSystem();
-        void SearchBook(std::string &, int &);
-        void BuyBook(std::string &, int &);
-        void SelectBook(std::string &);
-        void ModifyBook(std::string &, int &);
-        void ImportBook(int &, int &);
-        ~BookSystem();
-}
-```
+private:
+    BlockLinkedList<int> isbn_pos;
+    BlockLinkedList<int> book_name_pos;
+    BlockLinkedList<int> author_pos;
+    BlockLinkedList<int> keyword_pos;
+    std::fstream book_data;
+    std::fstream finance;
+    int count;
+public:
+    BookSystem();
 
-日志系统类：
+    void ReadBook(int, Book &);
 
-```cpp
-class LogSystem {
-    private:
-        int count;
-        double income;
-        double expense;
-    public:
-        Logsystem();
-        void QueryFinance(int &);
-        void GenerateLog();
-        ~Logsystem();
-}
+    void WriteBook(int, Book &);
+
+    void PrintAllBook();
+
+    void SearchBookByISBN(const std::string &);
+
+    void SearchBookByBookName(const std::string &);
+
+    void SearchBookByAuthor(const std::string &);
+
+    void SearchBookByKeyword(const std::string &);
+
+    void BuyBook(const std::string &, const int &);
+
+    int AddBook(const std::string &);
+
+    void SelectBook(const std::string &);
+
+    bool JudgeModify();
+
+    void ModifyBookISBN(const std::string &);
+
+    void ModifyBookName(const std::string &);
+
+    void ModifyBookAuthor(const std::string &);
+
+    void ModifyBookKeyword(const std::string &);
+
+    void ModifyBookPrice(const double &);
+
+    void ImportBook(const int &, const double &);
+
+    void ReadDeal(int, Deal &);
+
+    void WriteDeal(int, Deal &);
+
+    void NowFinance();
+
+    void QueryFinance(const int &);
+
+    void PrintAllFinance();
+
+    ~BookSystem();
+};
+
 ```
 
 书店类及全局函数：
 
 ```cpp
-std::vector<int> login_stack;
-class BookStore {
-	private:
-		AccountSystem account_system;
-		BookSystem book_system;
-		LogSystem log_system;
-		int id;
-	public:
-		BookStore();
-		void LoginAccount(std::string &, std::string &);
-        void LogoutAccount();
-        void Quit();
-		~BookStore();
-}
+static std::string op;
+static std::string str;
+
+class Bookstore {
+private:
+    AccountSystem account_system;
+    BookSystem book_system;
+    std::fstream log_file;
+    int op_count;
+public:
+    Bookstore();
+
+    void GenerateLog();
+
+    void Run();
+
+    ~Bookstore();
+};
 ```
 
 ##### 文件存储说明
 
-通过块状链表实现数据库，同时通过文件读写将数据库存于外存中，对于账户与图书以及日志均有一个数据库来维护。
+通过块状链表实现数据库，同时通过文件读写将数据库存于外存中。对于账户以及图书信息用单个文件存储所有信息，并使用数据库存储关键信息到文件中所在位置的映射。
 
 ##### 其他补充说明
 
-暂无
+对于日志系统，采取将日志系统中的财务信息与图书系统合并，在图书类中实现财务记录查询；对于日志系统中的日志功能则与书店类合并，在书店类中实现查询日志功能。
