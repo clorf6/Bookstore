@@ -14,7 +14,7 @@ void DivideOperation(const std::string& Op) {
     for (auto& i : Op) {
         if (i <= 31 || i >= 127) throw Exception("Invalid");
         if (i == ' ') {
-            ops.push_back(now_op);
+            if (!now_op.empty()) ops.push_back(now_op);
             now_op.clear();
         } else {
             now_op += i;
