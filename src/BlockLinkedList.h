@@ -209,7 +209,7 @@ void BlockLinkedList<T>::insert(const Element<T> &x) {
         now.size = 1;
         now.data[0] = now.min_element = x;
         WriteNode(1, now);
-        return ;
+        return;
     }
     ReadNodeInfo(1, now_info);
     if (!now_info.size) {
@@ -217,7 +217,7 @@ void BlockLinkedList<T>::insert(const Element<T> &x) {
         now.size = 1;
         now.data[0] = now.min_element = x;
         WriteNode(1, now);
-        return ;
+        return;
     }
     if (x < now_info.min_element) {
         ReadNode(1, now);
@@ -268,9 +268,9 @@ template<class T>
 void BlockLinkedList<T>::erase(const Element<T> &x) {
     file.seekg(0, std::ios::end);
     int delta = file.tellg();
-    if (!delta) return ;
+    if (!delta) return;
     ReadNodeInfo(1, now_info);
-    if (!now_info.size) return ;
+    if (!now_info.size) return;
     if (x < now_info.min_element) return;
     bool flag = false;
     while (x >= now_info.min_element) {
@@ -313,9 +313,9 @@ void BlockLinkedList<T>::find(const std::string &index) {
     ans.clear();
     file.seekg(0, std::ios::end);
     int delta = file.tellg();
-    if (!delta) return ;
+    if (!delta) return;
     ReadNodeInfo(1, now_info);
-    if (!now_info.size) return ;
+    if (!now_info.size) return;
     if (strcmp(buffer, now_info.min_element.index) < 0) {
         return;
     }
@@ -373,7 +373,7 @@ void BlockLinkedList<T>::getall() {
     ans.clear();
     file.seekg(0, std::ios::end);
     int delta = file.tellg();
-    if (!delta) return ;
+    if (!delta) return;
     ReadNode(1, now);
     if (!now.size) return;
     while (now.nex) {

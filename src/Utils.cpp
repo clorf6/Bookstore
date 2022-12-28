@@ -8,10 +8,10 @@
 
 std::vector<std::string> ops;
 
-void DivideOperation(const std::string& Op) {
+void DivideOperation(const std::string &Op) {
     now_op.clear();
     ops.clear();
-    for (auto& i : Op) {
+    for (auto &i: Op) {
         if (i <= 31 || i >= 127) throw Exception("Invalid");
         if (i == ' ') {
             if (!now_op.empty()) ops.push_back(now_op);
@@ -23,37 +23,37 @@ void DivideOperation(const std::string& Op) {
     if (!now_op.empty()) ops.push_back(now_op);
 }
 
-bool JudgeUserIDAndPasswd(const std::string& s) {
+bool JudgeUserIDAndPasswd(const std::string &s) {
     if (s.length() > 30) return false;
-    for (auto& i : s) {
+    for (auto &i: s) {
         if (!(std::isalpha(i) || std::isdigit(i) || i == '_')) return false;
     }
     return true;
 }
 
-bool JudgeUsername(const std::string& s) {
+bool JudgeUsername(const std::string &s) {
     if (s.length() > 30) return false;
-    for (auto& i : s) {
+    for (auto &i: s) {
         if (i <= 32 || i >= 127) return false;
     }
     return true;
 }
 
-bool JudgePrivilege(const std::string& s) {
+bool JudgePrivilege(const std::string &s) {
     if (s.length() != 1) return false;
     if (s[0] == '1' || s[0] == '3' || s[0] == '7') return true;
     return false;
 }
 
-bool JudgeISBN(const std::string& s) {
+bool JudgeISBN(const std::string &s) {
     if (s.length() > 20 || !s.length()) return false;
-    for (auto& i : s) {
+    for (auto &i: s) {
         if (i <= 32 || i >= 127) return false;
     }
     return true;
 }
 
-bool JudgeBooknameAndAuthor(const std::string& s) {
+bool JudgeBooknameAndAuthor(const std::string &s) {
     if (s.length() > 60 || s.length() <= 2) return false;
     if (s[0] != '"' || s.back() != '"') return false;
     for (int i = 1; i < s.length() - 1; i++) {
@@ -65,7 +65,7 @@ bool JudgeBooknameAndAuthor(const std::string& s) {
 void DivideKeyword(const std::string &_keyword, std::vector<std::string> &ret_keyword) {
     ret_keyword.clear();
     std::string now_keyword = "";
-    for (auto& i : _keyword) {
+    for (auto &i: _keyword) {
         if (i == '|') {
             ret_keyword.push_back(now_keyword);
             now_keyword.clear();
@@ -76,7 +76,7 @@ void DivideKeyword(const std::string &_keyword, std::vector<std::string> &ret_ke
     if (!now_keyword.empty()) ret_keyword.push_back(now_keyword);
 }
 
-bool JudgeKeyword(const std::string& s) {
+bool JudgeKeyword(const std::string &s) {
     if (s.length() > 60 || s.length() <= 2) return false;
     if (s[0] != '"' || s.back() != '"') return false;
     for (int i = 1; i < s.length() - 1; i++) {
@@ -93,10 +93,10 @@ bool JudgeKeyword(const std::string& s) {
     return true;
 }
 
-bool JudgeQuantity(const std::string& s) {
+bool JudgeQuantity(const std::string &s) {
     if (s.length() > 10 || !s.length()) return false;
     if (s.length() > 1 && s[0] == '0') return false;
-    for (auto& i : s) {
+    for (auto &i: s) {
         if (!std::isdigit(i)) return false;
     }
     long long Quantity = std::stoll(s);
@@ -104,26 +104,26 @@ bool JudgeQuantity(const std::string& s) {
     return true;
 }
 
-bool JudgePrice(const std::string& s) {
+bool JudgePrice(const std::string &s) {
     if (s.length() > 13) return false;
     if (s.length() > 1 && (s[0] == '0' && s[1] != '.')) return false;
     if (std::count(s.begin(), s.end(), '.') > 1) return false;
     if (s[0] == '.' || s.back() == '.') return false;
-    for (auto& i : s) {
+    for (auto &i: s) {
         if (!(std::isdigit(i) || i == '.')) return false;
     }
     return true;
 }
 
-bool JudgeCost(const std::string& s) {
+bool JudgeCost(const std::string &s) {
     if (!JudgePrice(s) || std::stod(s) <= eps) return false;
     return true;
 }
 
-bool JudgeCount(const std::string& s) {
+bool JudgeCount(const std::string &s) {
     if (s.length() > 10 || !s.length()) return false;
     if (s.length() > 1 && s[0] == '0') return false;
-    for (auto& i : s) {
+    for (auto &i: s) {
         if (!std::isdigit(i)) return false;
     }
     long long Count = std::stoll(s);

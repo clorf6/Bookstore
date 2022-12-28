@@ -11,15 +11,22 @@
 #include "Utils.h"
 
 static std::string op;
+static std::string str;
 
 class Bookstore {
 private:
     AccountSystem account_system;
     BookSystem book_system;
+    std::fstream log_file;
+    int op_count;
 public:
-    Bookstore() = default;
+    Bookstore();
+
+    void GenerateLog();
+
     void Run();
-    ~Bookstore() = default;
+
+    ~Bookstore();
 };
 
 #endif //BOOKSTORE_BOOKSTORE_H

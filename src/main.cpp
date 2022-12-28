@@ -4,6 +4,7 @@
 #include "Bookstore.h"
 
 Bookstore bookstore;
+
 int main() {
     bookstore.Run();
     return 0;

@@ -28,14 +28,14 @@ struct Book {
     int quantity;
     double price;
 
-    Book(const std::string& isbn = "",
-         const std::string& _book_name = "",
-         const std::string& _author = "",
-         const std::string& _keyword = "",
-         const int& _quantity = 0,
-         const double& _price = 0.0) :
-         quantity(_quantity),
-         price(_price) {
+    Book(const std::string &isbn = "",
+         const std::string &_book_name = "",
+         const std::string &_author = "",
+         const std::string &_keyword = "",
+         const int &_quantity = 0,
+         const double &_price = 0.0) :
+            quantity(_quantity),
+            price(_price) {
         memset(ISBN, 0, 21);
         memset(book_name, 0, 61);
         memset(author, 0, 61);
@@ -61,8 +61,8 @@ struct Deal {
 
     Deal(const double &Income = 0.0,
          const double &Outcome = 0.0) :
-         income(Income),
-         outcome(Outcome) {};
+            income(Income),
+            outcome(Outcome) {};
 };
 
 const size_t kSizeofDeal = 16;
@@ -76,31 +76,54 @@ private:
     BlockLinkedList<int> keyword_pos;
     std::fstream book_data;
     std::fstream finance;
-    std::fstream log_file;
     int count;
 public:
     BookSystem();
+
     void ReadBook(int, Book &);
+
     void WriteBook(int, Book &);
+
     void PrintAllBook();
+
     void SearchBookByISBN(const std::string &);
+
     void SearchBookByBookName(const std::string &);
+
     void SearchBookByAuthor(const std::string &);
+
     void SearchBookByKeyword(const std::string &);
+
     void BuyBook(const std::string &, const int &);
+
     int AddBook(const std::string &);
+
     void SelectBook(const std::string &);
+
     bool JudgeModify();
+
     void ModifyBookISBN(const std::string &);
+
     void ModifyBookName(const std::string &);
+
     void ModifyBookAuthor(const std::string &);
+
     void ModifyBookKeyword(const std::string &);
+
     void ModifyBookPrice(const double &);
+
     void ImportBook(const int &, const double &);
+
     void ReadDeal(int, Deal &);
+
     void WriteDeal(int, Deal &);
+
     void NowFinance();
-    void QueryFinance(const int&);
+
+    void QueryFinance(const int &);
+
+    void PrintAllFinance();
+
     ~BookSystem();
 };
 

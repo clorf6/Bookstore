@@ -7,6 +7,37 @@
 
 #include "Bookstore.h"
 
+Bookstore::Bookstore() {
+    log_file.open("log", std::ios::in | std::ios::out | std::ios::binary);
+    if (!log_file.is_open()) {
+        std::ofstream create("log");
+        create.close();
+        log_file.open("log", std::ios::in | std::ios::out | std::ios::binary);
+        op_count = 0;
+        log_file.seekp(0);
+        log_file << "                               \n";
+    } else {
+        log_file.seekg(0);
+        log_file >> op_count;
+    }
+}
+
+void Bookstore::GenerateLog() {
+    std::cout << "----Operation Records----\n";
+    log_file.seekg(0);
+    getline(log_file, str);
+    for (int i = 1; i <= op_count; i++) {
+        getline(log_file, str);
+        std::cout << str << '\n';
+    }
+    std::cout << "-------Book Records------\n";
+    book_system.PrintAllBook();
+    std::cout << "-----Finance Records-----\n";
+    book_system.PrintAllFinance();
+    std::cout << "All: ";
+    book_system.NowFinance();
+}
+
 void Bookstore::Run() {
     while (getline(std::cin, op)) {
         try {
@@ -15,6 +46,10 @@ void Bookstore::Run() {
             if (ops[0] == "exit" || ops[0] == "quit") {
                 if (ops.size() != 1) throw Exception("Invalid");
                 break;
+            } else if (ops[0] == "log") {
+                if (ops.size() != 1) throw Exception("Invalid");
+                if (GetPrivilege() != 7) throw Exception("Invalid");
+                GenerateLog();
             } else if (ops[0] == "su") {
                 if (ops.size() != 2 && ops.size() != 3) throw Exception("Invalid");
                 if (!JudgeUserIDAndPasswd(ops[1])) throw Exception("Invalid");
@@ -69,19 +104,19 @@ void Bookstore::Run() {
                         continue;
                     }
                     if (ops[1].substr(0, 6) == "-ISBN=") {
-                        auto&& ISBN = ops[1].substr(6);
+                        auto &&ISBN = ops[1].substr(6);
                         if (!JudgeISBN(ISBN)) throw Exception("Invalid");
                         book_system.SearchBookByISBN(ISBN);
                     } else if (ops[1].substr(0, 6) == "-name=") {
-                        auto&& book_name = ops[1].substr(6);
+                        auto &&book_name = ops[1].substr(6);
                         if (!JudgeBooknameAndAuthor(book_name)) throw Exception("Invalid");
                         book_system.SearchBookByBookName(book_name.substr(1, book_name.length() - 2));
                     } else if (ops[1].substr(0, 8) == "-author=") {
-                        auto&& author = ops[1].substr(8);
+                        auto &&author = ops[1].substr(8);
                         if (!JudgeBooknameAndAuthor(author)) throw Exception("Invalid");
                         book_system.SearchBookByAuthor(author.substr(1, author.length() - 2));
                     } else if (ops[1].substr(0, 9) == "-keyword=") {
-                        auto&& keyword = ops[1].substr(9);
+                        auto &&keyword = ops[1].substr(9);
                         if (!JudgeKeyword(keyword)) throw Exception("Invalid");
                         book_system.SearchBookByKeyword(keyword.substr(1, keyword.length() - 2));
                     } else throw Exception("Invalid");
@@ -127,13 +162,13 @@ void Bookstore::Run() {
                     if (ops[i][1] == 'I') {
                         book_system.ModifyBookISBN(ops[i].substr(6));
                     } else if (ops[i][1] == 'n') {
-                        auto&& bookname = ops[i].substr(6);
+                        auto &&bookname = ops[i].substr(6);
                         book_system.ModifyBookName(bookname.substr(1, bookname.length() - 2));
                     } else if (ops[i][1] == 'a') {
-                        auto&& author = ops[i].substr(8);
+                        auto &&author = ops[i].substr(8);
                         book_system.ModifyBookAuthor(author.substr(1, author.length() - 2));
                     } else if (ops[i].substr(0, 9) == "-keyword=") {
-                        auto&& keyword = ops[i].substr(9);
+                        auto &&keyword = ops[i].substr(9);
                         book_system.ModifyBookKeyword(keyword.substr(1, keyword.length() - 2));
                     } else if (ops[i].substr(0, 7) == "-price=") {
                         double price = std::stod(ops[i].substr(7));
@@ -151,9 +186,26 @@ void Bookstore::Run() {
         }
         catch (Exception &error) {
             std::cout << "Invalid\n";
+            continue;
         }
+        log_file.seekp(0, std::ios::end);
+        if (!online.empty()) {
+            account_system.ReadAccount(online.back().user_pos, now_account);
+            log_file << now_account.user_id << ' ';
+        }
+        for (auto &i: ops) {
+            log_file << i << ' ';
+        }
+        log_file << '\n';
+        op_count++;
     }
 }
 
+Bookstore::~Bookstore() {
+    log_file.seekp(0);
+    log_file << op_count;
+    log_file.close();
+    op_count = 0;
+}
 
 #endif //BOOKSTORE_BOOKSTORE_CPP

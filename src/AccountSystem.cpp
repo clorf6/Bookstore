@@ -8,6 +8,7 @@
 
 std::vector<OnlineUser> online;
 std::unordered_map<int, int> is_login;
+Account now_account;
 
 int GetPrivilege() {
     if (online.empty()) {
@@ -141,11 +142,6 @@ void AccountSystem::DelAccount(const std::string &User_ID) {
     account_pos.erase(Element<int>{User_ID, pos});
 }
 
-//void AccountSystem::GetTop() {
-//    ReadAccount(online.back().user_pos, top);
-//    std::cout << top.user_ID << ' ' << top.password << ' ' << top.user_name << ' ' << top.privilege << '\n';
-//}
-
 AccountSystem::~AccountSystem() {
     account_data.close();
     online.clear();
@@ -153,4 +149,3 @@ AccountSystem::~AccountSystem() {
 }
 
 #endif //BOOKSTORE_ACCOUNTSYSTEM_CPP
-

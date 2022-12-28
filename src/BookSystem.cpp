@@ -6,8 +6,8 @@
 
 #include "BookSystem.h"
 
-BookSystem::BookSystem(): isbn_pos("isbnpos"), book_name_pos("booknamepos"),
-                          author_pos("authorpos"), keyword_pos("keywordpos") {
+BookSystem::BookSystem() : isbn_pos("isbnpos"), book_name_pos("booknamepos"),
+                           author_pos("authorpos"), keyword_pos("keywordpos") {
     book_data.open("bookdata", std::ios::in | std::ios::out | std::ios::binary);
     if (!book_data.is_open()) {
         std::ofstream create;
@@ -28,13 +28,6 @@ BookSystem::BookSystem(): isbn_pos("isbnpos"), book_name_pos("booknamepos"),
         now_deal = Deal{0.0, 0.0};
         WriteDeal(0, now_deal);
     } else count--;
-    log_file.open("log", std::ios::in | std::ios::out | std::ios::binary);
-    if (!log_file.is_open()) {
-        std::ofstream create;
-        create.open("log");
-        create.close();
-        log_file.open("log", std::ios::in | std::ios::out | std::ios::binary);
-    }
 }
 
 void BookSystem::ReadBook(int pos,
@@ -338,7 +331,7 @@ void BookSystem::QueryFinance(const int &number) {
         throw Exception("Invalid");
     } else if (number == count) {
         NowFinance();
-        return ;
+        return;
     }
     ReadDeal(count, now_deal);
     ReadDeal(count - number, pre_deal);
@@ -347,10 +340,20 @@ void BookSystem::QueryFinance(const int &number) {
               << " - " << now_deal.outcome - pre_deal.outcome << '\n';
 }
 
+void BookSystem::PrintAllFinance() {
+    ReadDeal(0, pre_deal);
+    for (int i = 1; i <= count; i++) {
+        ReadDeal(i, now_deal);
+        std::cout << std::fixed << std::setprecision(2) << "Time " << i
+                  << ':' << " + " << now_deal.income - pre_deal.income
+                  << " - " << now_deal.outcome - pre_deal.outcome << '\n';
+        pre_deal = now_deal;
+    }
+}
+
 BookSystem::~BookSystem() {
     book_data.close();
     finance.close();
-    log_file.close();
     count = 0;
 }
 
