@@ -52,8 +52,10 @@ void AccountSystem::LoginAccount(const std::string &User_ID,
     int pos = account_pos.ans[0];
     ReadAccount(pos, now_account);
     //printf("fucking %s\n",now_account.password);
-    if (now_account.password != Password && GetPrivilege() <= now_account.privilege) {
-        throw Exception("Invalid");
+    if (now_account.password != Password) {
+        if (!Password.empty() || GetPrivilege() <= now_account.privilege) {
+            throw Exception("Invalid");
+        }
     }
     online.emplace_back(pos, 0, now_account.privilege);
     is_login[pos]++;
@@ -93,8 +95,10 @@ void AccountSystem::ChangePassword(const std::string &User_ID,
     }
     int pos = account_pos.ans[0];
     ReadAccount(pos, now_account);
-    if (now_account.password != CurPasswd && GetPrivilege() != 7) {
-        throw Exception("Invalid");
+    if (now_account.password != CurPasswd) {
+        if (!CurPasswd.empty() || GetPrivilege() != 7) {
+            throw Exception("Invalid");
+        }
     }
     memset(now_account.password, 0, 31);
     strcpy(now_account.password, NewPasswd.c_str());
